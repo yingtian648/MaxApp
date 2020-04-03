@@ -48,7 +48,7 @@ class MainActivity : BaseActivity() {
             dev.helpPhone = null
             dataList.add(dev)
         }
-        recyclerView.layoutManager = MyLinearLayoutManager(this, RecyclerView.VERTICAL)
+        recyclerView.layoutManager = MyLinearLayoutManager(this, RecyclerView.VERTICAL,false)
         recyclerView.adapter = myAdapter
         myAdapter.notifyDataSetChanged()
     }
