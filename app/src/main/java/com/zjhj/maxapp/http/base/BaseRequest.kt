@@ -2,7 +2,6 @@ package com.zjhj.maxapp.http.base
 
 import okhttp3.OkHttpClient
 import android.os.Build
-import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.zjhj.maxapp.http.HttpMsgUtil
@@ -13,8 +12,7 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 import okhttp3.Callback
-import org.json.JSONObject
-import java.util.ArrayList
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -25,12 +23,18 @@ import java.util.ArrayList
 class BaseRequest(val callView: IBaseCallView) {
     companion object {
         val gson = Gson()
-        const val SUCCESS_CODE = 200;//请求成功码
+        const val SUCCESS_CODE = 200//请求成功码
+        const val OPTION_TIME_OUT = 60L//请求超时时长（单位：秒）
     }
 
-    val client = OkHttpClient()
+    //初始化实例
+    val client = OkHttpClient().newBuilder().callTimeout(OPTION_TIME_OUT, TimeUnit.SECONDS)
+        .connectTimeout(OPTION_TIME_OUT, TimeUnit.SECONDS)
+        .readTimeout(OPTION_TIME_OUT, TimeUnit.SECONDS)
+        .build()
     val USER_AGENT = "Android-appV=" + Urls.VERSION + "(sysV-" +
             Build.VERSION.RELEASE + "," + Build.BRAND + "," + Build.MODEL + ")"
+
 
     inner class myBack(val reqType: Int, val isLoadMore: Boolean = false) : Callback {
         override fun onFailure(call: Call, e: IOException) {
@@ -52,6 +56,9 @@ class BaseRequest(val callView: IBaseCallView) {
 
     }
 
+    /**
+     * GET 方式请求数据
+     */
     fun getData(url: String, reqType: Int) {
         val request = Request.Builder()
             .addHeader("user-agent", USER_AGENT)
@@ -61,15 +68,25 @@ class BaseRequest(val callView: IBaseCallView) {
         client.newCall(request).enqueue(myBack(reqType))
     }
 
-
+    /**
+     * POST body
+     * 参数postBody是JSON字符串
+     */
     fun postBody(url: String, postBody: String, reqType: Int) {
 
     }
-
+    /**
+     * POST  Map
+     * 参数postBody是Map
+     */
     fun postBody(url: String, postBody: Map<String, Any>, reqType: Int) {
 
     }
 
+    /**
+     * GET
+     * 分页请求
+     */
     fun getMoreData(url: String, isLoadMore: Boolean, reqType: Int) {
 
     }
@@ -87,7 +104,7 @@ class BaseRequest(val callView: IBaseCallView) {
         return t
     }
 
-    fun <T> getResultList(content: String?, classType: Class<T>): List<T>? {
+    fun <T> getResultList(content: String?, classType: Class<T>): MutableList<T>? {
         if (content == null || content.equals("") || content.equals(null) || content.equals("unknown"))
             return null
         var results = mutableListOf<T>()

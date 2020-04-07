@@ -17,13 +17,15 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : BaseActivity(), IBaseCallView {
     val req = BaseRequest(this)
     override fun loadStart(msg: String, reqType: Int) {
-
+        L.d(msg)
     }
 
     override fun loadSuccessData(content: String?, isLoadMore: Boolean, reqType: Int) {
         L.d("返回数据：" + content)
-        var info: DevInfo? = req.getResult(content, DevInfo::class.java)
-        L.d(info?.deviceId + "")
+        var info: MutableList<DevInfo>? = req.getResultList(content, DevInfo::class.java)
+        if (info != null) {
+            L.d(info[0].deviceId + "")
+        }
     }
 
     override fun loadErr(message: String, reqType: Int) {
