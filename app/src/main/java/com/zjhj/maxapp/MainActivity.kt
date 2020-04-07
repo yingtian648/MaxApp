@@ -2,16 +2,34 @@ package com.zjhj.maxapp
 
 import android.os.Handler
 import android.os.Looper
-import android.text.format.Formatter
-import android.util.Log
 import android.view.WindowManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zjhj.maxapp.base.BaseActivity
+import com.zjhj.maxapp.bean.DevInfo
 import com.zjhj.maxapp.bean.DevsInfo
+import com.zjhj.maxapp.http.Urls
+import com.zjhj.maxapp.http.base.BaseRequest
+import com.zjhj.maxapp.http.base.IBaseCallView
 import com.zjhj.maxapp.myview.MyLinearLayoutManager
+import com.zjhj.maxapp.utils.L
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), IBaseCallView {
+    val req = BaseRequest(this)
+    override fun loadStart(msg: String, reqType: Int) {
+
+    }
+
+    override fun loadSuccessData(content: String?, isLoadMore: Boolean, reqType: Int) {
+        L.d("返回数据：" + content)
+        var info: DevInfo? = req.getResult(content, DevInfo::class.java)
+        L.d(info?.deviceId + "")
+    }
+
+    override fun loadErr(message: String, reqType: Int) {
+        L.d("请求失败，" + message)
+    }
+
     val TAG: String = "---------->"
     val handler: Handler = Handler(Looper.getMainLooper())
     var dataList = mutableListOf<DevsInfo>()
@@ -34,7 +52,6 @@ class MainActivity : BaseActivity() {
                 getData()
             }
         }, 6000)
-
     }
 
     override fun initData() {
@@ -48,12 +65,12 @@ class MainActivity : BaseActivity() {
             dev.helpPhone = null
             dataList.add(dev)
         }
-        recyclerView.layoutManager = MyLinearLayoutManager(this, RecyclerView.VERTICAL,false)
+        recyclerView.layoutManager = MyLinearLayoutManager(this, RecyclerView.VERTICAL, false)
         recyclerView.adapter = myAdapter
         myAdapter.notifyDataSetChanged()
     }
 
     override fun initView() {
-
+        req?.getData(Urls.getDevEvInfo, 123)
     }
 }

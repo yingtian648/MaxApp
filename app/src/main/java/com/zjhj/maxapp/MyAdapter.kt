@@ -21,7 +21,6 @@ class MyAdapter(context: Context, dataList: List<DevsInfo>, layoutId: Int) :
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        Log.d("-------->", "onBindViewHolder")
         val holder1 = holder as ItemHolder
         holder1.evOrder.text = dataList[position].evOrder ?: "梯号：--"
         holder1.helpPhone.text = dataList[position].helpPhone ?: "应急救援电话："
@@ -34,7 +33,6 @@ class MyAdapter(context: Context, dataList: List<DevsInfo>, layoutId: Int) :
         super.onViewAttachedToWindow(holder)
         val disp = DisplayMetrics()
         holder.itemView.display.getMetrics(disp)
-        Log.d("-------->", (disp.heightPixels.toString()))
     }
 
     class ItemHolder(view: View) : RecyclerView.ViewHolder(view) {
