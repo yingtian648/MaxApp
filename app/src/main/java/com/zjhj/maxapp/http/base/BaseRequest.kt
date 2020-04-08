@@ -42,10 +42,10 @@ class BaseRequest(val callView: IBaseCallView) {
                 .build()
             L.d(request.toString())
             try {
-                val buffer = Buffer()
-                request.body?.writeTo(buffer)
-                val paramsStr = buffer.readString(Charset.forName("UTF-8"))
                 if (request.method.toUpperCase() == "POST") {
+                    val buffer = Buffer()
+                    request.body?.writeTo(buffer)
+                    val paramsStr = buffer.readString(Charset.forName("UTF-8"))
                     L.d(
                         "RequestBody:mediaType=" + request.body?.contentType()?.type + "/" +
                                 request.body?.contentType()?.subtype +
@@ -55,14 +55,17 @@ class BaseRequest(val callView: IBaseCallView) {
             } catch (e: Exception) {
                 L.e("MyInterceptor Exception:" + e.message)
             }
-            //在这里获取到request后就可以做任何事情了
+            //请求返回值打印
             val response = chain.proceed(request)
             L.d("response:" + response.code.toString() + ":::" + response.body?.string())
             return response
         }
     }
 
-    //初始化实例
+    /**
+     * 初始化实例
+     * 设置请求超时时长
+     */
     val client = OkHttpClient().newBuilder().callTimeout(OPTION_TIME_OUT, TimeUnit.SECONDS)
         .addInterceptor(MyInterceptor())
         .connectTimeout(OPTION_TIME_OUT, TimeUnit.SECONDS)
