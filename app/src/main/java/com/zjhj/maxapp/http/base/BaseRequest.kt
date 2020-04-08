@@ -47,18 +47,16 @@ class BaseRequest(val callView: IBaseCallView) {
                     request.body?.writeTo(buffer)
                     val paramsStr = buffer.readString(Charset.forName("UTF-8"))
                     L.d(
-                        "RequestBody:mediaType=" + request.body?.contentType()?.type + "/" +
+                        "mediaType=" + request.body?.contentType()?.type + "/" +
                                 request.body?.contentType()?.subtype +
-                                "\tbody:" + paramsStr
+                                "\t" + paramsStr
                     )
                 }
             } catch (e: Exception) {
                 L.e("MyInterceptor Exception:" + e.message)
             }
             //请求返回值打印
-            val response = chain.proceed(request)
-            L.d("response:" + response.code.toString() + ":::" + response.body?.string())
-            return response
+            return chain.proceed(request)
         }
     }
 
@@ -66,8 +64,10 @@ class BaseRequest(val callView: IBaseCallView) {
      * 初始化实例
      * 设置请求超时时长
      */
-    val client = OkHttpClient().newBuilder().callTimeout(OPTION_TIME_OUT, TimeUnit.SECONDS)
+    val client = OkHttpClient().newBuilder()
         .addInterceptor(MyInterceptor())
+        .callTimeout(OPTION_TIME_OUT, TimeUnit.SECONDS)
+        .writeTimeout(OPTION_TIME_OUT, TimeUnit.SECONDS)
         .connectTimeout(OPTION_TIME_OUT, TimeUnit.SECONDS)
         .readTimeout(OPTION_TIME_OUT, TimeUnit.SECONDS)
         .build()
@@ -81,7 +81,9 @@ class BaseRequest(val callView: IBaseCallView) {
 
         override fun onResponse(call: Call, response: Response) {
             if (response.code == SUCCESS_CODE) {
-                this@BaseRequest.callView.loadSuccessData(response.body?.string(), isLoadMore, reqType)
+                var content = response.body?.string()
+                L.d(response.code.toString() + ":::" + content)
+                this@BaseRequest.callView.loadSuccessData(content, isLoadMore, reqType)
             } else {
                 this@BaseRequest.callView.loadErr(HttpMsgUtil.getHttpMsg(response.message), reqType)
             }
