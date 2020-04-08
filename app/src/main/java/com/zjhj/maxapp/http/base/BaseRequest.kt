@@ -1,18 +1,18 @@
 package com.zjhj.maxapp.http.base
 
-import okhttp3.OkHttpClient
 import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.zjhj.maxapp.http.HttpMsgUtil
 import com.zjhj.maxapp.http.Urls
 import com.zjhj.maxapp.utils.L
-import okhttp3.Call
-import okhttp3.Request
-import okhttp3.Response
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
-import okhttp3.Callback
 import java.util.concurrent.TimeUnit
+import okio.Buffer
+import java.nio.charset.Charset
 
 
 /**
@@ -27,28 +27,58 @@ class BaseRequest(val callView: IBaseCallView) {
         const val OPTION_TIME_OUT = 60L//请求超时时长（单位：秒）
     }
 
+
+    val USER_AGENT = "Android-appV=" + Urls.VERSION + "(sysV-" +
+            Build.VERSION.RELEASE + "," + Build.BRAND + "," + Build.MODEL + ")"
+
+    /**
+     * 拦截器
+     */
+    inner class MyInterceptor : Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            var request = chain.request()
+            request = request.newBuilder()
+                .addHeader("user-agent", USER_AGENT) //添加统一header
+                .build()
+            L.d(request.toString())
+            try {
+                val buffer = Buffer()
+                request.body?.writeTo(buffer)
+                val paramsStr = buffer.readString(Charset.forName("UTF-8"))
+                if (request.method.toUpperCase() == "POST") {
+                    L.d(
+                        "RequestBody:mediaType=" + request.body?.contentType()?.type + "/" +
+                                request.body?.contentType()?.subtype +
+                                "\tbody:" + paramsStr
+                    )
+                }
+            } catch (e: Exception) {
+                L.e("MyInterceptor Exception:" + e.message)
+            }
+            //在这里获取到request后就可以做任何事情了
+            val response = chain.proceed(request)
+            L.d("response:" + response.code.toString() + ":::" + response.body?.string())
+            return response
+        }
+    }
+
     //初始化实例
     val client = OkHttpClient().newBuilder().callTimeout(OPTION_TIME_OUT, TimeUnit.SECONDS)
+        .addInterceptor(MyInterceptor())
         .connectTimeout(OPTION_TIME_OUT, TimeUnit.SECONDS)
         .readTimeout(OPTION_TIME_OUT, TimeUnit.SECONDS)
         .build()
-    val USER_AGENT = "Android-appV=" + Urls.VERSION + "(sysV-" +
-            Build.VERSION.RELEASE + "," + Build.BRAND + "," + Build.MODEL + ")"
 
 
     inner class myBack(val reqType: Int, val isLoadMore: Boolean = false) : Callback {
         override fun onFailure(call: Call, e: IOException) {
-            L.e(call.request().toString())
             L.e(e.message + "")
             this@BaseRequest.callView.loadErr(HttpMsgUtil.getHttpMsg(e.message), reqType)
         }
 
         override fun onResponse(call: Call, response: Response) {
-            L.d(response.code.toString() + ":::" + call.request().toString())
             if (response.code == SUCCESS_CODE) {
-                val content = response.body?.string()
-                L.d("response:" + content.toString())
-                this@BaseRequest.callView.loadSuccessData(content, isLoadMore, reqType)
+                this@BaseRequest.callView.loadSuccessData(response.body?.string(), isLoadMore, reqType)
             } else {
                 this@BaseRequest.callView.loadErr(HttpMsgUtil.getHttpMsg(response.message), reqType)
             }
@@ -61,7 +91,6 @@ class BaseRequest(val callView: IBaseCallView) {
      */
     fun getData(url: String, reqType: Int) {
         val request = Request.Builder()
-            .addHeader("user-agent", USER_AGENT)
             .url(url)
             .build()
         callView.loadStart("加载中...", reqType)
@@ -73,8 +102,16 @@ class BaseRequest(val callView: IBaseCallView) {
      * 参数postBody是JSON字符串
      */
     fun postBody(url: String, postBody: String, reqType: Int) {
-
+        val mediaType = "application/json; charset=utf-8".toMediaType()
+        val body = postBody.toRequestBody(mediaType)
+        val request = Request.Builder()
+            .url(url)
+            .post(body)
+            .build()
+        callView.loadStart("加载中...", reqType)
+        client.newCall(request).enqueue(myBack(reqType))
     }
+
     /**
      * POST  Map
      * 参数postBody是Map

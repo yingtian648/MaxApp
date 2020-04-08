@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.zjhj.maxapp.base.BaseActivity
 import com.zjhj.maxapp.bean.DevInfo
 import com.zjhj.maxapp.bean.DevsInfo
@@ -73,6 +74,10 @@ class MainActivity : BaseActivity(), IBaseCallView {
     }
 
     override fun initView() {
-        req?.getData(Urls.getDevEvInfo, 123)
+//        req?.getData(Urls.getDevEvInfo, 123)
+        val params = mutableMapOf<String, Any>()
+        params.put("sn", Urls.SN)
+        params.put("deviceAlarmType", 201)
+        req?.postBody(Urls.devFaultAlarm, Gson().toJson(params), 124)
     }
 }
