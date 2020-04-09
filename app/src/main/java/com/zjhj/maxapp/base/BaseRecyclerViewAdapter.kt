@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import java.text.FieldPosition
 
 /**
  * CreateTime 2020/4/2 09:15
@@ -13,6 +14,12 @@ import androidx.recyclerview.widget.RecyclerView
  */
 abstract class BaseRecyclerViewAdapter<T>(context: Context, dataList: List<T>, layoutId: Int) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    interface OnClickRecyclerItemListener {
+        fun onClickRecyclerItem(position: Int)
+    }
+
+    var listener: OnClickRecyclerItemListener? = null
     var dataList = dataList
     val context = context
     val layoutId = layoutId

@@ -1,22 +1,32 @@
 package com.zjhj.maxapp
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Environment
+import android.os.FileUtils
 import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
+import android.webkit.PermissionRequest
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
 import com.zjhj.maxapp.base.BaseActivity
+import com.zjhj.maxapp.base.BaseRecyclerViewAdapter
 import com.zjhj.maxapp.bean.DevInfo
-import com.zjhj.maxapp.bean.DevsInfo
-import com.zjhj.maxapp.http.Urls
 import com.zjhj.maxapp.http.base.BaseRequest
 import com.zjhj.maxapp.http.base.IBaseCallView
 import com.zjhj.maxapp.myview.MyLinearLayoutManager
+import com.zjhj.maxapp.appUtil.AppInfo
+import com.zjhj.maxapp.appUtil.PackageUtil
+import com.zjhj.maxapp.base.BaseRecyclerViewAdapter.*
+import com.zjhj.maxapp.utils.FileUtil
 import com.zjhj.maxapp.utils.L
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
-class MainActivity : BaseActivity(), IBaseCallView {
+class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener {
     val req = BaseRequest(this)
+    lateinit var pkutil: PackageUtil //延迟初始化，可以避免检查空
     override fun loadStart(msg: String, reqType: Int) {
         L.d(msg)
     }
@@ -35,7 +45,7 @@ class MainActivity : BaseActivity(), IBaseCallView {
 
     val TAG: String = "---------->"
     val handler: Handler = Handler(Looper.getMainLooper())
-    var dataList = mutableListOf<DevsInfo>()
+    var dataList = mutableListOf<AppInfo>()
     var myAdapter = MyAdapter(this, dataList, R.layout.item_rv)
 
     override fun setContentView() {
@@ -58,26 +68,35 @@ class MainActivity : BaseActivity(), IBaseCallView {
     }
 
     override fun initData() {
-        for (i in 1..10) {
-            val dev = DevsInfo()
-            dev.evOrder = "梯号：" + i
-            dev.regCode = "注册号码：1546562554545" + i
-            dev.lastMT = "上次保养时间：2020-01-02"
-            dev.nextAT = "下次年检时间：2020-01-02"
-//            dev.helpPhone = "应急救援电话：1354865656"
-            dev.helpPhone = null
-            dataList.add(dev)
-        }
+        pkutil = PackageUtil(this)
+        dataList.addAll(pkutil.getAppList())
         recyclerView.layoutManager = MyLinearLayoutManager(this, RecyclerView.VERTICAL, false)
         recyclerView.adapter = myAdapter
         myAdapter.notifyDataSetChanged()
+        myAdapter.listener = this
     }
 
     override fun initView() {
-//        req?.getData(Urls.getDevEvInfo, 123)
-        val params = mutableMapOf<String, Any>()
-        params.put("sn", Urls.SN)
-        params.put("deviceAlarmType", 201)
-        req?.postBody(Urls.devFaultAlarm, Gson().toJson(params), 124)
+        val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE //这个是需要申请的权限信息
+        val checkPermission = let { ActivityCompat.checkSelfPermission(this, permission) }
+        if (checkPermission == PackageManager.PERMISSION_GRANTED) {//已授权
+            L.d("已授权")
+        } else {
+            ActivityCompat.requestPermissions(this, Array(1) { permission }, 1111)
+        }
+//        req?.getData(Urls.getDevEvInfo, 123)//GET Test
+
+//        val params = mutableMapOf<String, Any>()
+//        params.put("sn", Urls.SN)
+//        params.put("deviceAlarmType", 201)
+//        req?.postBody(Urls.devFaultAlarm, Gson().toJson(params), 124)  //POST Test
+    }
+
+    override fun onClickRecyclerItem(position: Int) {
+        val BACKUP_PATH = "/sdcard/backup1"
+        L.d("点击列表项：$position:" + dataList[position].appName)
+        val apkFilePath = BACKUP_PATH + pkutil.getApkPath(dataList[position].packageName)
+        var savePath = Environment.DIRECTORY_DOWNLOADS + "/111.apk"
+        FileUtil.copyFile(apkFilePath, savePath)
     }
 }
