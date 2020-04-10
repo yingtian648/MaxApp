@@ -1,11 +1,11 @@
 package com.zjhj.maxapp.utils
 
+import android.content.Context
+import android.text.format.Formatter
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.InputStream
-import java.nio.ByteBuffer
 
 /**
  * CreateTime 2020/4/9 16:39
@@ -14,17 +14,22 @@ import java.nio.ByteBuffer
  */
 class FileUtil {
     companion object {
-        fun copyFile(resPath: String?, savePath: String?) {
-            L.d("copy文件")
-            if (resPath == null || savePath == null || !File(resPath).exists()) return
-            var file = File(savePath)
+        fun copyFile(context: Context,resPath: String?, savePath: String?) {
+            L.d("copy文件：源文件：" + resPath + "\t保存到：" + savePath)
+            if (resPath == null || savePath == null || !File(resPath).exists()) {
+                L.e("源文件不存在或保存地址为空")
+                return
+            }
+            L.d("源文件大小：" + Formatter.formatFileSize(context, File(resPath).length()))
             GlobalScope.launch {
                 //启动协程来处理
+                val file = File(savePath)
                 try {
                     if (!file.exists()) {
                         file.parentFile?.mkdirs()
                         file.createNewFile()
                     }
+                    L.d("源文件大小：" + File(resPath).length())
                     val fis = FileInputStream(File(resPath))
                     val fos = FileOutputStream(file)
                     val b = ByteArray(2048)
@@ -38,16 +43,21 @@ class FileUtil {
                     fis.close()
                     L.d("复制成功")
                 } catch (e: Exception) {
-                    L.d("copyFile Exception："+e.message)
+                    L.d("copyFile Exception：" + e.message)
                 }
             }
         }
 
-        fun copyFileN(resPath: String?, savePath: String?) {
-            if (resPath == null || savePath == null || !File(resPath).exists()) return
-            var file = File(savePath)
+        fun copyFileN(context: Context, resPath: String?, savePath: String?) {
+            L.d("copy文件：源文件：" + resPath + "\t保存到：" + savePath)
+            if (resPath == null || savePath == null || !File(resPath).exists()) {
+                L.e("源文件不存在或保存地址为空")
+                return
+            }
+            L.d("源文件大小：" + Formatter.formatFileSize(context, File(resPath).length()))
             GlobalScope.launch {
                 //启动协程来处理
+                val file = File(savePath)
                 try {
                     if (!file.exists()) {
                         file.parentFile?.mkdirs()
