@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
+import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -23,21 +24,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener {
     val req = BaseRequest(this)
     lateinit var pkutil: PackageUtil //延迟初始化，可以避免检查空
-    override fun loadStart(msg: String, reqType: Int) {
-        L.d(msg)
-    }
-
-    override fun loadSuccessData(content: String?, isLoadMore: Boolean, reqType: Int) {
-        L.d("返回数据：" + content)
-        var info: MutableList<DevInfo>? = req.getResultList(content, DevInfo::class.java)
-        if (info != null) {
-            L.d(info[0].deviceId + "")
-        }
-    }
-
-    override fun loadErr(message: String, reqType: Int) {
-        L.d("请求失败，" + message)
-    }
+    lateinit var adContainer:ViewGroup
 
     val TAG: String = "---------->"
     val handler: Handler = Handler(Looper.getMainLooper())
@@ -73,6 +60,7 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     }
 
     override fun initView() {
+        adContainer = findViewById(R.id.adframe)
         val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE //这个是需要申请的权限信息
         val checkPermission = let { ActivityCompat.checkSelfPermission(this, permission) }
         if (checkPermission == PackageManager.PERMISSION_GRANTED) {//已授权
@@ -94,5 +82,21 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
         val apkFilePath = pkutil.getApkPath(dataList[position].packageName)
         var savePath = "/sdcard/111.apk"
         FileUtil.copyFileN(this,apkFilePath, savePath)
+    }
+
+    override fun loadStart(msg: String, reqType: Int) {
+        L.d(msg)
+    }
+
+    override fun loadSuccessData(content: String?, isLoadMore: Boolean, reqType: Int) {
+        L.d("返回数据：" + content)
+        var info: MutableList<DevInfo>? = req.getResultList(content, DevInfo::class.java)
+        if (info != null) {
+            L.d(info[0].deviceId + "")
+        }
+    }
+
+    override fun loadErr(message: String, reqType: Int) {
+        L.d("请求失败，" + message)
     }
 }
