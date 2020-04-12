@@ -7,7 +7,7 @@ import androidx.viewpager.widget.PagerAdapter
 
 
 class BaseViewPagerStateAdapter(fm: FragmentManager, val fragmentList: MutableList<Fragment>) :
-    FragmentStatePagerAdapter(fm, FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     override fun getItem(position: Int): Fragment {
         return fragmentList[position]
     }

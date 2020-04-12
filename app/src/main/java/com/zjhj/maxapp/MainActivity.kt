@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.zjhj.maxapp.adplayer.AdPlayer
 import com.zjhj.maxapp.appUtil.AppInfo
 import com.zjhj.maxapp.appUtil.PackageUtil
 import com.zjhj.maxapp.base.BaseActivity
@@ -25,6 +26,7 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     val req = BaseRequest(this)
     lateinit var pkutil: PackageUtil //延迟初始化，可以避免检查空
     lateinit var adContainer:ViewGroup
+    lateinit var adPlayer: AdPlayer
 
     val TAG: String = "---------->"
     val handler: Handler = Handler(Looper.getMainLooper())
@@ -52,6 +54,8 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
 
     override fun initData() {
         pkutil = PackageUtil(this)
+        adPlayer = AdPlayer(this,adContainer)
+        adPlayer.startPlay()
         dataList.addAll(pkutil.getAppList())
         recyclerView.layoutManager = MyLinearLayoutManager(this, RecyclerView.VERTICAL, false)
         recyclerView.adapter = myAdapter
@@ -60,7 +64,7 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     }
 
     override fun initView() {
-        adContainer = findViewById(R.id.adframe)
+        adContainer = findViewById(R.id.adContainer)
         val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE //这个是需要申请的权限信息
         val checkPermission = let { ActivityCompat.checkSelfPermission(this, permission) }
         if (checkPermission == PackageManager.PERMISSION_GRANTED) {//已授权
