@@ -1,6 +1,9 @@
 package com.zjhj.maxapp
 
 import android.Manifest
+import android.app.AlertDialog
+import android.content.Context
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Environment
 import android.os.Handler
@@ -21,11 +24,12 @@ import com.zjhj.maxapp.myview.MyLinearLayoutManager
 import com.zjhj.maxapp.utils.FileUtil
 import com.zjhj.maxapp.utils.L
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
 
 class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener {
     val req = BaseRequest(this)
     lateinit var pkutil: PackageUtil //延迟初始化，可以避免检查空
-    lateinit var adContainer:ViewGroup
+    lateinit var adContainer: ViewGroup
     lateinit var adPlayer: AdPlayer
 
     val TAG: String = "---------->"
@@ -54,7 +58,7 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
 
     override fun initData() {
         pkutil = PackageUtil(this)
-        adPlayer = AdPlayer(this,adContainer)
+        adPlayer = AdPlayer(this, adContainer)
         adPlayer.startPlay()
         dataList.addAll(pkutil.getAppList())
         recyclerView.layoutManager = MyLinearLayoutManager(this, RecyclerView.VERTICAL, false)
@@ -81,11 +85,8 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     }
 
     override fun onClickRecyclerItem(position: Int) {
-        val BACKUP_PATH = "/sdcard/backup1"
         L.d("点击列表项：$position:" + dataList[position].appName)
-        val apkFilePath = pkutil.getApkPath(dataList[position].packageName)
-        var savePath = "/sdcard/111.apk"
-        FileUtil.copyFileN(this,apkFilePath, savePath)
+        pkutil.showCopyApkDialog(this, dataList[position])
     }
 
     override fun loadStart(msg: String, reqType: Int) {

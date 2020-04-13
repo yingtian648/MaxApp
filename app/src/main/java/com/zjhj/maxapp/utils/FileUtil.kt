@@ -1,7 +1,9 @@
 package com.zjhj.maxapp.utils
 
+import android.app.Activity
 import android.content.Context
 import android.text.format.Formatter
+import android.widget.Toast
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileInputStream
@@ -14,7 +16,7 @@ import java.io.FileOutputStream
  */
 class FileUtil {
     companion object {
-        fun copyFile(context: Context,resPath: String?, savePath: String?) {
+        fun copyFile(context: Context, resPath: String?, savePath: String?) {
             L.d("copy文件：源文件：" + resPath + "\t保存到：" + savePath)
             if (resPath == null || savePath == null || !File(resPath).exists()) {
                 L.e("源文件不存在或保存地址为空")
@@ -75,9 +77,15 @@ class FileUtil {
                     fos.close()
                     ism.close()
                     L.d("复制成功")
+                    (context as Activity).runOnUiThread({
+                        Toast.makeText(context, "复制成功:"+savePath, Toast.LENGTH_SHORT).show()
+                    })
                 } catch (e: Exception) {
                     L.d("")
-                    L.d("copyFile Exception")
+                    L.d("copyFile Exception:" + e.message)
+                    (context as Activity).runOnUiThread({
+                        Toast.makeText(context, "复制失败 Exception:" + e.message, Toast.LENGTH_SHORT).show()
+                    })
                 }
             }
         }

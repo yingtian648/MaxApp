@@ -19,16 +19,16 @@ class PagePic(val context: Activity, val type: Int) : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         image = view.findViewById(R.id.adp_image)
-        image.setBackgroundResource(R.mipmap.ic_launcher)
+        image.setBackgroundResource(R.drawable.a1)
         initData()
     }
 
     private fun initData() {
         if (type == 1) {
-            image.setBackgroundResource(R.mipmap.ic_launcher_round)
+            image.setBackgroundResource(R.drawable.a2)
         }
         if (type == 2) {
-            image.setBackgroundResource(R.drawable.a121)
+            image.setBackgroundResource(R.drawable.a3)
         }
     }
 
