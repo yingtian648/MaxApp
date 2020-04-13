@@ -1,7 +1,10 @@
 package com.zjhj.maxapp
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.projection.MediaProjectionManager
 import android.os.Handler
 import android.os.Looper
 import android.view.ViewGroup
@@ -18,6 +21,8 @@ import com.zjhj.maxapp.bean.DevInfo
 import com.zjhj.maxapp.http.base.BaseRequest
 import com.zjhj.maxapp.http.base.IBaseCallView
 import com.zjhj.maxapp.myview.MyLinearLayoutManager
+import com.zjhj.maxapp.screensame.Constants
+import com.zjhj.maxapp.screensame.RecordScreenService
 import com.zjhj.maxapp.utils.L
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -30,6 +35,7 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     val TAG: String = "---------->"
     val handler: Handler = Handler(Looper.getMainLooper())
     var dataList = mutableListOf<AppInfo>()
+    val REQUEST_SYS_SCREENRECORD = 1233
     var myAdapter = ApkCopyAdapter(this, dataList, R.layout.item_rv)
 
     override fun setContentView() {
@@ -81,7 +87,8 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
 
     override fun onClickRecyclerItem(position: Int) {
         L.d("点击列表项：$position:" + dataList[position].appName)
-        pkutil.showCopyApkDialog(this, dataList[position])
+//        pkutil.showCopyApkDialog(this, dataList[position])
+        startRecordScreen()
     }
 
     override fun loadStart(msg: String, reqType: Int) {
@@ -98,5 +105,32 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
 
     override fun loadErr(message: String, reqType: Int) {
         L.d("请求失败，" + message)
+    }
+
+    //  调用方式
+    lateinit var  mMediaProjectionManager: MediaProjectionManager;
+
+    fun startRecordScreen() {
+        L.d("触发录屏服务");
+        mMediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager;
+        startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(),
+                REQUEST_SYS_SCREENRECORD);
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_SYS_SCREENRECORD -> {
+                if (resultCode == RESULT_OK && data != null) {
+                    L.d("启动录屏服务");
+                    val service = Intent(MainActivity@this, RecordScreenService::class.java)
+                    service.putExtra("code", resultCode);
+                    service.putExtra("data", data);
+                    service.putExtra(Constants.TYPE_FLAG_NAME, Constants.TYPE_SHOTSCREEN) //[返回]类型-截屏);
+                    startService(service)
+                }
+            }
+        }
     }
 }
