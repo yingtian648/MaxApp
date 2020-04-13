@@ -1,10 +1,11 @@
-package com.zjhj.maxapp
+package com.zjhj.maxapp.adapter
 
 import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.zjhj.maxapp.R
 import com.zjhj.maxapp.base.BaseRecyclerViewAdapter
 import com.zjhj.maxapp.appUtil.AppInfo
 
@@ -13,7 +14,7 @@ import com.zjhj.maxapp.appUtil.AppInfo
  * Author LiuShiHua
  * Description：
  */
-class MyAdapter(context: Context, dataList: List<AppInfo>, layoutId: Int) :
+class ApkCopyAdapter(context: Context, dataList: List<AppInfo>, layoutId: Int) :
     BaseRecyclerViewAdapter<AppInfo>(context, dataList, layoutId) {
     override fun onCreateHolder(view: View): RecyclerView.ViewHolder {
         return ItemHolder(view)
@@ -28,12 +29,6 @@ class MyAdapter(context: Context, dataList: List<AppInfo>, layoutId: Int) :
         holder1.image.setImageDrawable(dataList[position].iconDrawable)
     }
 
-//    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {//测试用
-//        super.onViewAttachedToWindow(holder)
-//        val disp = DisplayMetrics()
-//        holder.itemView.display.getMetrics(disp)
-//    }
-
     inner class ItemHolder(view: View) : RecyclerView.ViewHolder(view) {
         val image = view.findViewById<ImageView>(R.id.image)
         val appName = view.findViewById<TextView>(R.id.appName)
@@ -43,7 +38,7 @@ class MyAdapter(context: Context, dataList: List<AppInfo>, layoutId: Int) :
 
         init {
             view.setOnClickListener {
-                this@MyAdapter.listener?.onClickRecyclerItem(adapterPosition)
+                this@ApkCopyAdapter.listener?.onClickRecyclerItem(adapterPosition)
             }
         }
     }
