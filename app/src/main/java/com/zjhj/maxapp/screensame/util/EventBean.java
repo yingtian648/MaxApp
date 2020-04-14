@@ -1,4 +1,4 @@
-package com.zjhj.maxapp.screensame;
+package com.zjhj.maxapp.screensame.util;
 
 public class EventBean {
     private String msg;
@@ -30,6 +30,11 @@ public class EventBean {
     public EventBean(String msg, String content) {
         this.msg = msg;
         this.content = content;
+    }
+
+    public EventBean(String msg, Integer type) {
+        this.msg = msg;
+        this.type = type;
     }
 
     public EventBean(String msg) {

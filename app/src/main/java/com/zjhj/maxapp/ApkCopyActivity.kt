@@ -8,8 +8,8 @@ import android.view.WindowManager
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.zjhj.maxapp.adapter.ApkCopyAdapter
-import com.zjhj.maxapp.appUtil.AppInfo
-import com.zjhj.maxapp.appUtil.PackageUtil
+import com.zjhj.maxapp.appcopy.AppInfo
+import com.zjhj.maxapp.appcopy.PackageUtil
 import com.zjhj.maxapp.base.BaseActivity
 import com.zjhj.maxapp.base.BaseRecyclerViewAdapter
 import com.zjhj.maxapp.myview.MyLinearLayoutManager

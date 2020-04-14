@@ -19,6 +19,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.Surface;
 import androidx.annotation.Nullable;
+import com.zjhj.maxapp.screensame.util.Constants;
+import com.zjhj.maxapp.screensame.util.EventBean;
 import com.zjhj.maxapp.utils.FileUtil;
 import com.zjhj.maxapp.utils.L;
 import com.zjhj.maxapp.utils.Tools;

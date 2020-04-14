@@ -18,10 +18,9 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     abstract fun setContentView()
-
+    abstract fun initView()
+    abstract fun initData()
     abstract fun getData()
 
-    abstract fun initData()
 
-    abstract fun initView()
 }

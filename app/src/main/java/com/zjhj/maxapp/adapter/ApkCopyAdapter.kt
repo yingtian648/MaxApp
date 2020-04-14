@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.zjhj.maxapp.R
 import com.zjhj.maxapp.base.BaseRecyclerViewAdapter
-import com.zjhj.maxapp.appUtil.AppInfo
+import com.zjhj.maxapp.appcopy.AppInfo
 
 /**
  * CreateTime 2020/4/2 09:51

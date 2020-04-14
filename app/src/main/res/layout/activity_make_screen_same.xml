@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:orientation="vertical"
+        tools:context=".MakeScreenSameActivity">
+
+    <TextView
+            android:id="@+id/ipT"
+            android:layout_width="wrap_content"
+            android:text="本地IP：--"
+            android:layout_height="wrap_content"/>
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
+        <Button
+                android:id="@+id/stop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="150dp"
+                android:text="stop"/>
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
+
+
+        <Button
+                android:id="@+id/sendMsgBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="发送文字消息"/>
+
+        <Button
+                android:id="@+id/sendImgMsgBtn"
+                android:layout_width="0dp"
+                android:layout_marginLeft="10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="发送图片消息"/>
+        />
+    </LinearLayout>
+    <TextView
+            android:id="@+id/msgShow"
+            android:layout_marginTop="20dp"
+            android:padding="5dp"
+            android:background="@android:color/darker_gray"
+            android:textColor="@android:color/white"
+            android:hint="接收数据..."
+            android:textSize="14sp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+</LinearLayout>

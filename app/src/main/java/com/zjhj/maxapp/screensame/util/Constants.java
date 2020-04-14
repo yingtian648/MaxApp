@@ -1,6 +1,8 @@
-package com.zjhj.maxapp.screensame;
+package com.zjhj.maxapp.screensame.util;
 
 import android.os.Environment;
+
+import java.security.PublicKey;
 
 public class Constants {
 
@@ -26,4 +28,22 @@ public class Constants {
 
     public static final int TYPE_PUBLISH_MESSAGE = 999;//返回类型-MQtt发送消息
 
+
+    public static final int EVENT_TYPE_RECEIVE_MSG = 1101;//收到消息
+    public static final int EVENT_TYPE_SEND_MSG = 1102;//发送消息
+
+    /**
+     * socket消息类型
+     * 发送时：添加到内容第2位
+     * 接收时：取第一位做数据类型识别
+     */
+    public static final Byte MSG_TYPE_STRING = 0x00;
+    public static final Byte MSG_TYPE_IMAGE = 0x01;
+    /**
+     * socket消息内容完整性校验
+     * 发送时：添加到内容第2位
+     * 接收时：取第一位做数据类型识别
+     */
+    public static final Byte MSG_CONTEND_START = (byte) 0xff;
+    public static final Byte MSG_CONTEND_END = (byte) 0xed;
 }

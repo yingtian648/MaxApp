@@ -1,4 +1,4 @@
-package com.zjhj.maxapp.appUtil
+package com.zjhj.maxapp.appcopy
 
 import android.graphics.drawable.Drawable
 

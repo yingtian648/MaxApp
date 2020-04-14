@@ -1,32 +1,20 @@
 package com.zjhj.maxapp.utils;
 
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.ClipboardManager;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.*;
-import android.text.TextUtils;
-import android.text.format.Formatter;
-import android.util.DisplayMetrics;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.Toast;
-import com.google.gson.*;
-import com.zjhj.maxapp.App;
 
-import java.io.*;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.lang.Process;
+import android.content.ClipboardManager;
+
+import android.content.Context;
+
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
+
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+
+import java.util.Enumeration;
+
 
 /**
  * CreateTime 2017/7/18 14:48
@@ -79,5 +67,24 @@ public class Tools {
     public static int px2dip(Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
+    }
+
+    public static String getLocalHostIpIPV4() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> ipAddr = intf.getInetAddresses(); ipAddr.hasMoreElements(); ) {
+                    InetAddress inetAddress = ipAddr.nextElement();
+                    // ipv4地址
+                    if (!inetAddress.isLoopbackAddress()
+                            && inetAddress instanceof Inet4Address) {
+                        return inetAddress.getHostAddress();
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 }
