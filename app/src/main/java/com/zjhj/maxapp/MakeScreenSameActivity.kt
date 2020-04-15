@@ -56,8 +56,7 @@ class MakeScreenSameActivity : BaseActivity() {
                 L.d("设备加入：" + dev?.friendlyName)
                 if (dev != null && "urn:schemas-upnp-org:device:MediaRenderer:1".equals(dev.getDeviceType())) {//判断是否为DMR
                     deviceList.add(dev)
-                })
-                deviceList.add(dev)
+                }
             }
         })
         GlobalScope.launch {
