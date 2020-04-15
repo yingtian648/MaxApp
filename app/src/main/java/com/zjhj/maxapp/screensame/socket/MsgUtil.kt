@@ -19,7 +19,7 @@ fun getMsgContent(data: ByteArray): ByteArray? {
     if (data.size == 3) {
         return null
     } else if (data.size > 3 && data[data.lastIndex] == Constants.MSG_CONTEND_END && data[1] == Constants.MSG_CONTEND_START) {
-        return data.copyOfRange(2, data.lastIndex - 1)
+        return data.copyOfRange(2, data.lastIndex)
     }
     return null
 }
