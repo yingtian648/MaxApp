@@ -6,6 +6,7 @@ import com.zjhj.maxapp.screensame.util.Constants
  * CreateTime 2020/4/14 17:12
  * Author LiuShiHua
  * Description：
+ * 消息体：消息类型+消息(头)开始标志+[消息体]+消息(尾)结束标志
  */
 
 //获取消息类型
@@ -16,7 +17,7 @@ fun getMsgType(data: ByteArray): Byte {
     return Constants.MSG_TYPE_UNKNOWN
 }
 
-
+//获取消息体
 fun getMsgContent(data: ByteArray): ByteArray? {
     if (data.size == 3) {
         return null
@@ -26,6 +27,7 @@ fun getMsgContent(data: ByteArray): ByteArray? {
     return null
 }
 
+//添加消息头和尾
 fun addMsgTyoe(data: ByteArray?, msgType: Byte): ByteArray {
     if (data == null || data.isEmpty()) {
         return byteArrayOf(msgType, Constants.MSG_CONTEND_START, Constants.MSG_CONTEND_END)
