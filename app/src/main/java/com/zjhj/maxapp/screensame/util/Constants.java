@@ -37,8 +37,9 @@ public class Constants {
      * 发送时：添加到内容第2位
      * 接收时：取第一位做数据类型识别
      */
-    public static final Byte MSG_TYPE_STRING = 0x00;
-    public static final Byte MSG_TYPE_IMAGE = 0x01;
+    public static final Byte MSG_TYPE_STRING = 0x00; //字符串消息
+    public static final Byte MSG_TYPE_IMAGE = 0x01;//图片消息
+    public static final Byte MSG_TYPE_UNKNOWN = (byte) 0xff;//未知消息
     /**
      * socket消息内容完整性校验
      * 发送时：添加到内容第2位
