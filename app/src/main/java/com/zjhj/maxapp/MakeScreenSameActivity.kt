@@ -3,16 +3,20 @@ package com.zjhj.maxapp
 import android.os.Bundle
 import android.os.Environment
 import android.text.TextUtils
-import android.util.Log
 import com.zjhj.maxapp.base.BaseActivity
 import com.zjhj.maxapp.screensame.socket.UDPSocket
 import com.zjhj.maxapp.screensame.util.Constants
 import com.zjhj.maxapp.screensame.util.EventBean
-import com.zjhj.maxapp.utils.PathUtil.Companion.getPicTempPath
 import com.zjhj.maxapp.utils.Tools
+import com.zjhj.maxapp.utils.L
 import com.zjhj.maxapp.utils.image.ImageCompressUtil
 import com.zjhj.maxapp.utils.image.ImageUtils
 import kotlinx.android.synthetic.main.activity_make_screen_same.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.cybergarage.upnp.ControlPoint
+import org.cybergarage.upnp.Device
+import org.cybergarage.upnp.device.DeviceChangeListener
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -24,6 +28,7 @@ class MakeScreenSameActivity : BaseActivity() {
     var img2 = Environment.getExternalStorageDirectory()?.absolutePath + File.separator + "a12.jpg"
     lateinit var socket: UDPSocket
     lateinit var fileNow: File
+    val deviceList = mutableListOf<Device>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -35,6 +40,30 @@ class MakeScreenSameActivity : BaseActivity() {
 
     override fun getData() {
         fileNow = ImageCompressUtil.getCompressFile(img2, 60 * 1024)
+
+        val controlPoint = ControlPoint()
+        controlPoint.addNotifyListener({
+            L.d("搜索到设备地址：" + it.remoteAddress)
+        })
+        controlPoint.addDeviceChangeListener(object : DeviceChangeListener {
+            override fun deviceRemoved(dev: Device?) {
+                L.d("设备离线：" + dev?.friendlyName)
+                if (dev != null)
+                    deviceList.remove(dev)
+            }
+
+            override fun deviceAdded(dev: Device?) {
+                L.d("设备加入：" + dev?.friendlyName)
+                if (dev != null && "urn:schemas-upnp-org:device:MediaRenderer:1".equals(dev.getDeviceType())) {//判断是否为DMR
+                    deviceList.add(dev)
+                })
+                deviceList.add(dev)
+            }
+        })
+        GlobalScope.launch {
+            controlPoint.start()
+            controlPoint.search()
+        }
     }
 
     override fun initData() {

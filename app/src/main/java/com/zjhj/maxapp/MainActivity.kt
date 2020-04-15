@@ -39,8 +39,6 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     var myAdapter = ApkCopyAdapter(this, dataList, R.layout.item_rv)
 
     override fun setContentView() {
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_main)
     }
 
