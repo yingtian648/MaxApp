@@ -1,20 +1,29 @@
 package com.zjhj.maxapp
 
 import android.os.Bundle
+import android.os.Environment
 import android.text.TextUtils
+import android.util.Log
 import com.zjhj.maxapp.base.BaseActivity
 import com.zjhj.maxapp.screensame.socket.UDPSocket
 import com.zjhj.maxapp.screensame.util.Constants
 import com.zjhj.maxapp.screensame.util.EventBean
+import com.zjhj.maxapp.utils.PathUtil.Companion.getPicTempPath
 import com.zjhj.maxapp.utils.Tools
+import com.zjhj.maxapp.utils.image.ImageCompressUtil
+import com.zjhj.maxapp.utils.image.ImageUtils
 import kotlinx.android.synthetic.main.activity_make_screen_same.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.io.File
 
 
 class MakeScreenSameActivity : BaseActivity() {
+    var img1 = Environment.getExternalStorageDirectory()?.absolutePath + File.separator + "a11.png"
+    var img2 = Environment.getExternalStorageDirectory()?.absolutePath + File.separator + "a12.jpg"
     lateinit var socket: UDPSocket
+    lateinit var fileNow: File
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -25,6 +34,7 @@ class MakeScreenSameActivity : BaseActivity() {
     }
 
     override fun getData() {
+        fileNow = ImageCompressUtil.getCompressFile(img2, 60 * 1024)
     }
 
     override fun initData() {
@@ -35,18 +45,26 @@ class MakeScreenSameActivity : BaseActivity() {
     override fun initView() {
         ipT.setText(Tools.getLocalHostIpIPV4())
         sendMsgBtn.setOnClickListener {
-            socket.sendUDPMsg("你好".toByteArray(Charsets.UTF_8),Constants.MSG_TYPE_STRING)
+            socket.sendUDPMsg("你好".toByteArray(Charsets.UTF_8), Constants.MSG_TYPE_STRING)
         }
         sendImgMsgBtn.setOnClickListener {
-            socket.sendUDPMsg(byteArrayOf(),Constants.MSG_TYPE_IMAGE)
+            socket.sendUDPMsg(
+                ImageUtils.getFileBitmapBytesJpg(fileNow.absolutePath),
+                Constants.MSG_TYPE_IMAGE
+            )
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun busReceive(event: EventBean) {
         when (event.type) {
-            Constants.EVENT_TYPE_RECEIVE_MSG -> {//收到数据
+            Constants.EVENT_TYPE_RECEIVE_MSG_STRING -> {//收到数据
                 msgShow.setText(if (TextUtils.isEmpty(msgShow.text)) (event.msg + "：" + event.content) else (msgShow.text.toString() + "\n" + event.msg + "：" + event.content))
+            }
+            Constants.EVENT_TYPE_RECEIVE_MSG_IMAGE -> {//收到图片
+                var receiveBitmap = ImageUtils.getBitmapFromByteArray(event.bytesContent)
+                image.setImageBitmap(receiveBitmap)
+                msgShow.setText(if (TextUtils.isEmpty(msgShow.text)) (event.msg + "：" + event.content) else (msgShow.text.toString() + "\n" + event.msg + "：图片"))
             }
             Constants.EVENT_TYPE_SEND_MSG -> {//发送数据
                 msgShow.setText(if (TextUtils.isEmpty(msgShow.text)) ("我：" + event.msg) else (msgShow.text.toString() + "\n我：" + event.msg))

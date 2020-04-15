@@ -3,6 +3,7 @@ package com.zjhj.maxapp.screensame.util;
 public class EventBean {
     private String msg;
     private String content;
+    private byte[] bytesContent;
     private Integer type;
 
     public Integer getType() {
@@ -13,6 +14,20 @@ public class EventBean {
         this.msg = msg;
         this.content = content;
         this.type = type;
+    }
+
+    public EventBean(String msg, byte[] bytesContent, Integer type) {
+        this.msg = msg;
+        this.bytesContent = bytesContent;
+        this.type = type;
+    }
+
+    public byte[] getBytesContent() {
+        return bytesContent;
+    }
+
+    public void setBytesContent(byte[] bytesContent) {
+        this.bytesContent = bytesContent;
     }
 
     public void setType(Integer type) {

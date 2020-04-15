@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.os.Environment
 import com.zjhj.maxapp.utils.FileUtil
 import com.zjhj.maxapp.utils.L
+import com.zjhj.maxapp.utils.PathUtil
 import java.io.File
 
 /**
@@ -58,11 +59,11 @@ class PackageUtil(val context: Activity) {
      * 复制APK弹框
      */
     fun showCopyApkDialog(context: Context, appInfo: AppInfo) {
-        var savePath = Environment.getExternalStorageDirectory()?.absolutePath +
+        var savePath = PathUtil.BASE_PATH +
                 File.separator +
                 appInfo.appName + ".apk"
         AlertDialog.Builder(context).setTitle("复制APK提示")
-            .setMessage("您正在复制:" + appInfo.appName + "\n复制到：手机SD存储目录下/" + appInfo.appName + ".apk" + "\n确定复制吗？")
+            .setMessage("您正在复制:" + appInfo.appName + "\n复制到：手机SD存储目录/AAFiles/" + appInfo.appName + ".apk" + "\n确定复制吗？")
             .setPositiveButton("复制APK", object : DialogInterface.OnClickListener {
                 override fun onClick(p0: DialogInterface?, p1: Int) {
                     val apkFilePath = getApkPath(appInfo.packageName)

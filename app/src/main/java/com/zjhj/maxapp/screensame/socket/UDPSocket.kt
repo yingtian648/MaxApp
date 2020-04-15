@@ -50,7 +50,7 @@ class UDPSocket : Thread() {
                             EventBean(
                                 receiveDataDp.address.hostAddress,
                                 if (content == null) "" else String(content, Charsets.UTF_8),
-                                Constants.EVENT_TYPE_RECEIVE_MSG
+                                Constants.EVENT_TYPE_RECEIVE_MSG_STRING
                             )
                         )
                     }
@@ -59,8 +59,8 @@ class UDPSocket : Thread() {
                         eventBus.post(
                             EventBean(
                                 receiveDataDp.address.hostAddress,
-                                String(data, Charsets.UTF_8),
-                                Constants.EVENT_TYPE_RECEIVE_MSG
+                                content,
+                                Constants.EVENT_TYPE_RECEIVE_MSG_IMAGE
                             )
                         )
                     }
@@ -68,36 +68,34 @@ class UDPSocket : Thread() {
                     eventBus.post(
                         EventBean(
                             receiveDataDp.address.hostAddress,
-                            "",
-                            Constants.EVENT_TYPE_RECEIVE_MSG
+                            "收到一条空消息",
+                            Constants.EVENT_TYPE_RECEIVE_MSG_STRING
                         )
                     )
                 }
             }
-            L.d(
-                "收到" + receiveDataDp.address.hostAddress + "消息：" + String(
-                    receiveDataDp.data,
-                    0,
-                    receiveDataDp.length,
-                    Charsets.UTF_8
-                )
-            )
+            L.d("收到" + receiveDataDp.address.hostAddress + "消息,长度：" + receiveDataDp.length)
         }
     }
 
-    fun sendUDPMsg(data: ByteArray, msgType: Byte) {
-        eventBus.post(EventBean(String(data, Charsets.UTF_8), Constants.EVENT_TYPE_SEND_MSG))
+    fun sendUDPMsg(data: ByteArray?, msgType: Byte) {
+        L.d("发送数据总大小：" + data?.size)
+        eventBus.post(EventBean("发送消息", Constants.EVENT_TYPE_SEND_MSG))
         val sendData = addMsgTyoe(data, msgType)
         GlobalScope.launch {
-            if (data.size > 60 * 1024) {
+            if (data != null && data.size > 60 * 1024) {
                 var indexTotal = data.size / (60 * 1024)
+                if ((data.size % (60 * 1024)) > 0) {
+                    indexTotal++
+                }
                 var index = 0
                 while (index < indexTotal) {
                     var bytes: ByteArray = ByteArray(60 * 1024)
                     if (index == (indexTotal - 1)) {
                         bytes = sendData.copyOfRange(index * (60 * 1024), sendData.size)
+                        index++
                     } else {
-                        bytes = sendData.copyOfRange(index * (60 * 1024), (index++) * ((60 * 1024)))
+                        bytes = sendData.copyOfRange(index * (60 * 1024), (++index) * ((60 * 1024)))
                     }
                     sendData(bytes)
                 }
