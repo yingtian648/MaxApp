@@ -39,40 +39,38 @@ class UDPSocket : Thread() {
         while (true) {
             socket.receive(receiveDataDp)
             //有数据，且非自己发送
-            if (!receiveDataDp.address.hostAddress.equals(localHostAddress)) {
-                if (receiveDataDp.length > 0) {
-                    val data = receiveDataDp.data.copyOfRange(0, receiveDataDp.length)//实际传输数据
-                    val msgType = getMsgType(data)
-                    val content = getMsgContent(data)
-                    if (msgType == Constants.MSG_TYPE_STRING) {
-                        L.d("收到文字消息")
-                        eventBus.post(
-                            EventBean(
-                                receiveDataDp.address.hostAddress,
-                                if (content == null) "" else String(content, Charsets.UTF_8),
-                                Constants.EVENT_TYPE_RECEIVE_MSG_STRING
-                            )
-                        )
-                    }
-                    if (msgType == Constants.MSG_TYPE_IMAGE) {
-                        L.d("收到图片消息")
-                        eventBus.post(
-                            EventBean(
-                                receiveDataDp.address.hostAddress,
-                                content,
-                                Constants.EVENT_TYPE_RECEIVE_MSG_IMAGE
-                            )
-                        )
-                    }
-                } else {
+            if (receiveDataDp.length > 0) {
+                val data = receiveDataDp.data.copyOfRange(0, receiveDataDp.length)//实际传输数据
+                val msgType = getMsgType(data)
+                val content = getMsgContent(data)
+                if (msgType == Constants.MSG_TYPE_STRING) {
+                    L.d("收到文字消息")
                     eventBus.post(
                         EventBean(
                             receiveDataDp.address.hostAddress,
-                            "收到一条空消息",
+                            if (content == null) "" else String(content, Charsets.UTF_8),
                             Constants.EVENT_TYPE_RECEIVE_MSG_STRING
                         )
                     )
                 }
+                if (msgType == Constants.MSG_TYPE_IMAGE) {
+                    L.d("收到图片消息")
+                    eventBus.post(
+                        EventBean(
+                            receiveDataDp.address.hostAddress,
+                            content,
+                            Constants.EVENT_TYPE_RECEIVE_MSG_IMAGE
+                        )
+                    )
+                }
+            } else {
+                eventBus.post(
+                    EventBean(
+                        receiveDataDp.address.hostAddress,
+                        "收到一条空消息",
+                        Constants.EVENT_TYPE_RECEIVE_MSG_STRING
+                    )
+                )
             }
             L.d("收到" + receiveDataDp.address.hostAddress + "消息,长度：" + receiveDataDp.length)
         }
@@ -80,6 +78,10 @@ class UDPSocket : Thread() {
 
     fun sendUDPMsg(data: ByteArray?, msgType: Byte) {
         L.d("发送数据总大小：" + data?.size)
+        if (data != null && data.size > 60 * 1024) {
+            eventBus.post(EventBean("发送消息失败，内容过大[最大60K]", Constants.EVENT_TYPE_SEND_MSG))
+            return
+        }
         eventBus.post(EventBean("发送消息", Constants.EVENT_TYPE_SEND_MSG))
         val sendData = addMsgTyoe(data, msgType)
         GlobalScope.launch {

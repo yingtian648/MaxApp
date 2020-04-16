@@ -41,9 +41,9 @@
     </LinearLayout>
     <ImageView
             android:id="@+id/image"
-            android:layout_width="320dp"
+            android:layout_width="match_parent"
             android:layout_marginTop="10dp"
-            android:layout_height="240dp"/>
+            android:layout_height="480px"/>
     <TextView
             android:id="@+id/msgShow"
             android:layout_marginTop="10dp"
