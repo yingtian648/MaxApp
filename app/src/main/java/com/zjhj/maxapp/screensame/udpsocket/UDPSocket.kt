@@ -1,4 +1,4 @@
-package com.zjhj.maxapp.screensame.socket
+package com.zjhj.maxapp.screensame.udpsocket
 
 import com.zjhj.maxapp.screensame.util.Constants
 import com.zjhj.maxapp.screensame.util.EventBean
@@ -7,7 +7,6 @@ import com.zjhj.maxapp.utils.Tools
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
-import java.io.IOException
 import java.net.DatagramPacket
 import java.net.InetAddress
 import java.net.MulticastSocket
@@ -39,7 +38,7 @@ class UDPSocket : Thread() {
         while (true) {
             socket.receive(receiveDataDp)
             //有数据，且非自己发送
-            if (receiveDataDp.length > 0) {
+            if (receiveDataDp.length > 0 && !receiveDataDp.address.hostAddress.equals(localHostAddress)) {
                 val data = receiveDataDp.data.copyOfRange(0, receiveDataDp.length)//实际传输数据
                 val msgType = getMsgType(data)
                 val content = getMsgContent(data)

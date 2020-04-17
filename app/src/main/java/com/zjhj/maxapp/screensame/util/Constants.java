@@ -32,6 +32,7 @@ public class Constants {
     public static final int EVENT_TYPE_RECEIVE_MSG_STRING = 1101;//收到消息
     public static final int EVENT_TYPE_RECEIVE_MSG_IMAGE = 1102;//收到消息
     public static final int EVENT_TYPE_SEND_MSG = 2102;//发送消息
+    public static final int EVENT_TYPE_DLAN_DEVICES_ADD = 3101;//发送消息
 
     /**
      * socket消息类型

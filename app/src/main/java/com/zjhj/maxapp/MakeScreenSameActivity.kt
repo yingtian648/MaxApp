@@ -1,46 +1,40 @@
 package com.zjhj.maxapp
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
+import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import android.os.Environment
 import android.text.TextUtils
 import androidx.core.app.ActivityCompat
 import com.zjhj.maxapp.base.BaseActivity
-import com.zjhj.maxapp.screensame.socket.UDPSocket
+import com.zjhj.maxapp.screensame.RecordScreenService
+import com.zjhj.maxapp.screensame.udpsocket.UDPSocket
 import com.zjhj.maxapp.screensame.util.Constants
+import com.zjhj.maxapp.screensame.util.DLanUtil
 import com.zjhj.maxapp.screensame.util.EventBean
+import com.zjhj.maxapp.screensame.util.EventDevicesBean
 import com.zjhj.maxapp.utils.L
 import com.zjhj.maxapp.utils.Tools
-import com.zjhj.maxapp.utils.image.ImageCompressUtil
 import com.zjhj.maxapp.utils.image.ImageUtils
 import kotlinx.android.synthetic.main.activity_make_screen_same.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.cybergarage.upnp.ControlPoint
 import org.cybergarage.upnp.Device
-import org.cybergarage.upnp.Service
-import org.cybergarage.upnp.device.DeviceChangeListener
-import org.cybergarage.upnp.event.EventListener
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
-import java.net.URL
 import java.util.*
 
 
 class MakeScreenSameActivity : BaseActivity() {
     var img1 = Environment.getExternalStorageDirectory()?.absolutePath + File.separator + "a11.png"
     var img2 = Environment.getExternalStorageDirectory()?.absolutePath + File.separator + "a12.jpg"
-    lateinit var socket: UDPSocket
-    lateinit var fileNow: File
-    lateinit var controlPoint: ControlPoint
+    val REQUEST_SYS_SCREENRECORD = 1233
+    lateinit var dLanUtil: DLanUtil
     val deviceList = mutableListOf<Device>()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun setContentView() {
         setContentView(R.layout.activity_make_screen_same)
@@ -56,37 +50,60 @@ class MakeScreenSameActivity : BaseActivity() {
     }
 
     override fun getData() {
-        try {
-            fileNow = ImageCompressUtil.getCompressFile(img2, 30 * 1024)
-        } catch (e: Exception) {
-            L.d("压缩失败")
-        }
-        Timer().schedule(object : TimerTask() {
-            override fun run() {
-                runOnUiThread {
-                    image.setImageBitmap(BitmapFactory.decodeFile(fileNow.absolutePath))
-                }
-            }
-        }, 2000)
+
     }
 
     override fun initData() {
-        socket = UDPSocket()
-        socket.start()
+        dLanUtil = DLanUtil(this)
+        dLanUtil.startSearchDevices()
     }
 
     override fun initView() {
         ipT.setText(Tools.getLocalHostIpIPV4())
         sendMsgBtn.setOnClickListener {
-            socket.sendUDPMsg("你好".toByteArray(Charsets.UTF_8), Constants.MSG_TYPE_STRING)
+            for (dev in deviceList) {
+                if (dev.friendlyName.contains("Windows Media Player")) {
+                    dLanUtil.getDeviceServerDec(dev)
+                    dLanUtil.reqDlanPlay(dev)
+                }
+            }
         }
         sendImgMsgBtn.setOnClickListener {
-            L.d("发送前文件大小：" + fileNow.length())
-            socket.sendUDPMsg(
-                ImageUtils.getFileBitmapBytesJpg(fileNow.absolutePath),
-                Constants.MSG_TYPE_IMAGE
-            )
+
         }
+        screenshots.setOnClickListener {
+            startPlayViews()
+            startRecordScreen()
+        }
+    }
+
+    fun startPlayViews() {
+        var imgIndex = 1
+        image.setImageResource(R.drawable.a1)
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+                runOnUiThread {
+                    when (imgIndex) {
+                        1 -> {
+                            image.setImageResource(R.drawable.a1)
+                            imgIndex = 2
+                        }
+                        2 -> {
+                            image.setImageResource(R.drawable.a2)
+                            imgIndex = 3
+                        }
+                        3 -> {
+                            image.setImageResource(R.drawable.a3)
+                            imgIndex = 4
+                        }
+                        4 -> {
+                            image.setImageResource(R.drawable.a4)
+                            imgIndex = 1
+                        }
+                    }
+                }
+            }
+        }, 3000, 3000)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -106,8 +123,43 @@ class MakeScreenSameActivity : BaseActivity() {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun busReceiveDevices(event: EventDevicesBean) {
+        if (event.device != null)
+            deviceList.add(event.device)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
+    }
+
+    //  调用方式
+    lateinit var mMediaProjectionManager: MediaProjectionManager;
+
+    fun startRecordScreen() {
+        L.d("触发录屏服务");
+        mMediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager;
+        startActivityForResult(
+            mMediaProjectionManager.createScreenCaptureIntent(),
+            REQUEST_SYS_SCREENRECORD
+        );
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_SYS_SCREENRECORD -> {
+                if (resultCode == RESULT_OK && data != null) {
+                    L.d("启动录屏服务");
+                    val service = Intent(MainActivity@ this, RecordScreenService::class.java)
+                    service.putExtra("code", resultCode);
+                    service.putExtra("data", data);
+                    service.putExtra(Constants.TYPE_FLAG_NAME, Constants.TYPE_SHOTSCREEN) //[返回]类型-截屏);
+                    startService(service)
+                }
+            }
+        }
     }
 }

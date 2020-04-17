@@ -1,4 +1,4 @@
-package com.zjhj.maxapp.screensame.socket
+package com.zjhj.maxapp.screensame.udpsocket
 
 import com.zjhj.maxapp.screensame.util.Constants
 

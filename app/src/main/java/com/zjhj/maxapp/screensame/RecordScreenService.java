@@ -5,7 +5,9 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.Image;
@@ -19,15 +21,16 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.Surface;
 import androidx.annotation.Nullable;
+import com.zjhj.maxapp.screensame.udpsocket.UDPSocket;
 import com.zjhj.maxapp.screensame.util.Constants;
 import com.zjhj.maxapp.screensame.util.EventBean;
 import com.zjhj.maxapp.utils.FileUtil;
 import com.zjhj.maxapp.utils.L;
 import com.zjhj.maxapp.utils.Tools;
+import com.zjhj.maxapp.utils.image.ImageCompressUtil;
 import org.greenrobot.eventbus.EventBus;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 
 /**
@@ -54,8 +57,8 @@ public class RecordScreenService extends IntentService {
     private String savePath;
     private Bitmap mBitmap;
     private EventBus bus;
-    private final String screenShotsPath = Environment.getExternalStorageDirectory()+"/AMaxApp/screenshots.jpg";
-    private final String screenRecordPath = Environment.getExternalStorageDirectory()+"/AMaxApp/screenrecordpath.mp4";
+    private final String screenShotsPath = Environment.getExternalStorageDirectory() + "/AMaxApp/screenshots.jpg";
+    private final String screenRecordPath = Environment.getExternalStorageDirectory() + "/AMaxApp/screenrecordpath.mp4";
 
     private final long DELAY_GETCAPTURE = 2000;//延时2秒截屏
     private final long DELAY_GETCAPTURE_STOPRECORD = 2500;//延时2秒截屏后停止录制
@@ -68,6 +71,8 @@ public class RecordScreenService extends IntentService {
     private final int HANDLER_RECORD_FAILURE = 4;//录制失败
     private final int HANDLER_GETCAPTURE_SUCCESS = FileUtil.SAVE_FILE_SUCCESS;//截屏成功
     private final int HANDLER_GETCAPTURE_FAILURE = FileUtil.SAVE_FILE_FAILURE;//截屏失败
+
+    private UDPSocket socket;
 
     private Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
@@ -107,6 +112,7 @@ public class RecordScreenService extends IntentService {
         super.onCreate();
         this.context = this;
         bus = EventBus.getDefault();
+        socket = new UDPSocket();
     }
 
     @Override
@@ -125,7 +131,7 @@ public class RecordScreenService extends IntentService {
                     mScreenWidth, mScreenHeight, mScreenDensity, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                     imageReaderSurface, null, null);
             handler.sendEmptyMessageDelayed(HANDLER_GETCAPTURE, DELAY_GETCAPTURE);
-            handler.sendEmptyMessageDelayed(HANDLER_STOP_RECORD, DELAY_GETCAPTURE_STOPRECORD);
+//            handler.sendEmptyMessageDelayed(HANDLER_STOP_RECORD, DELAY_GETCAPTURE_STOPRECORD);
         } else {//录屏
             mMediaRecorder = createMediaRecorder();
             if (mMediaRecorder == null) return;
@@ -198,9 +204,11 @@ public class RecordScreenService extends IntentService {
             int rowStride = planes[0].getRowStride();
             int rowPadding = rowStride - pixelStride * width;
             if (mBitmap == null) {
-                mBitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888);
+                mBitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_4444);
             }
             mBitmap.copyPixelsFromBuffer(buffer);
+            sendBitmap(mBitmap);
+            L.Companion.d("截屏文件大小：" + mBitmap.getByteCount());
             if (mBitmap != null) {
                 FileUtil.Companion.saveBitmapToImage(mBitmap, screenShotsPath, handler);
             } else {
@@ -212,6 +220,45 @@ public class RecordScreenService extends IntentService {
             }
             image.close();
         }
+    }
+
+    private void sendBitmap(Bitmap bitmap) {
+        if (bitmap == null) {
+            handler.sendEmptyMessageDelayed(HANDLER_GETCAPTURE, 100);
+            return;
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 60, baos);
+        bitmap = ImageCompressUtil.getProportionBitmap(bitmap, 640, 480);
+        baos.reset();
+        bitmap = zipBitmapByQuality(bitmap, 30 * 1024);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+        socket.sendUDPMsg(baos.toByteArray(), Constants.MSG_TYPE_IMAGE);
+        handler.sendEmptyMessageDelayed(HANDLER_GETCAPTURE, 100);
+    }
+
+    /**
+     * 按质量压缩图片
+     *
+     * @param image
+     * @param maxSize 最大允许图片大小
+     * @return
+     */
+    private Bitmap zipBitmapByQuality(Bitmap image, long maxSize) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        int quality = 100;
+        while (baos.toByteArray().length > maxSize) {
+            baos.reset();
+            quality -= 5;
+            if (quality == 0) {
+                image.compress(Bitmap.CompressFormat.JPEG, 1, baos);
+                break;
+            } else
+                image.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+        }
+        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
+        return BitmapFactory.decodeStream(isBm, (Rect) null, (BitmapFactory.Options) null);
     }
 
     private void stopRecord() {
@@ -235,6 +282,12 @@ public class RecordScreenService extends IntentService {
             message.obj = savePath;
             handler.sendMessageDelayed(message, DELAY_STOPRECORD_CALLBACK);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        L.Companion.d("RecordScreenService desttroy");
     }
 }
 

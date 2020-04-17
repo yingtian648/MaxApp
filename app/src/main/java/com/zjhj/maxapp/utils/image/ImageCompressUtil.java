@@ -35,8 +35,7 @@ public class ImageCompressUtil {
             return copyFile(nativeFilePath, getFileTempPath());
         }
         //获取压缩bitmap
-//        Bitmap bm = getZipSizeBitmap(nativeFilePath, 640, 480);
-        Bitmap bm = getProportionBitmap(BitmapFactory.decodeFile(nativeFilePath), 640, 480);
+        Bitmap bm = getZipSizeBitmap(nativeFilePath, 640, 480);
         ExifInterface exifInterface = new ExifInterface(nativeFilePath);
         return saveBitmap(bm, getFileTempPath(), exifInterface, maxSize);
     }
@@ -181,7 +180,7 @@ public class ImageCompressUtil {
     }
 
     //返回压缩图片文件的压缩bitmap【按尺寸比例压缩】
-    private static Bitmap getZipSizeBitmap(String filePath, int reqWidth, int reqHeight) throws OutOfMemoryError {
+    public static Bitmap getZipSizeBitmap(String filePath, int reqWidth, int reqHeight) throws OutOfMemoryError {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         /**
          * inJustDecodeBounds参数设为true并加载图片
@@ -191,13 +190,36 @@ public class ImageCompressUtil {
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(filePath, options);
         L.Companion.d("压缩前的比bitmap宽高：" + options.outWidth + "*" + options.outHeight);
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+//        options.inSampleSize = 10;
         //得到采样率后，将BitmapFacpry.Options的inSampleSize参数设为false并重新加载图片。
         options.inJustDecodeBounds = false;
         Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
         L.Companion.d("压缩后的比bitmap宽高：" + bitmap.getWidth() + "*" + bitmap.getHeight() + "\t" + bitmap.getByteCount());
         return bitmap;
     }
+
+    //返回压缩图片文件的压缩bitmap【按尺寸比例压缩】
+    public static Bitmap getZipSizeBitmap(byte[] bytes, int reqWidth, int reqHeight) throws OutOfMemoryError {
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        /**
+         * inJustDecodeBounds参数设为true并加载图片
+         * 这样做的原因是inJustDecodeBounds为true时
+         * BitmapFactory只会解析图片的原始宽高信息，并不会真正的加载图片
+         */
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+        L.Companion.d("压缩前的比bitmap宽高：" + options.outWidth + "*" + options.outHeight);
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        //得到采样率后，将BitmapFacpry.Options的inSampleSize参数设为false并重新加载图片。
+        options.inJustDecodeBounds = false;
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+        L.Companion.d("压缩后的比bitmap宽高：" + bitmap.getWidth() + "*" + bitmap.getHeight() + "\t" + bitmap.getByteCount());
+        return bitmap;
+    }
+
 
     //保存并返回图片文件
     private static File saveBitmap(Bitmap bm, String filePath, ExifInterface exifInterface, long maxSize) throws Exception {

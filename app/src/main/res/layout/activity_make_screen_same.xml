@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
-            android:gravity="center_horizontal">
+            android:gravity="center_vertical">
 
 
         <Button
@@ -28,30 +28,36 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="发送文字消息"/>
+                android:text="发送投屏服务"/>
 
         <Button
                 android:id="@+id/sendImgMsgBtn"
                 android:layout_width="0dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="2dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="发送图片消息"/>
-        />
+        <Button
+                android:id="@+id/screenshots"
+                android:layout_width="0dp"
+                android:layout_marginLeft="2dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="截屏"/>
     </LinearLayout>
     <ImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
-            android:layout_height="480px"/>
+            android:layout_marginTop="5dp"
+            android:layout_height="match_parent"/>
     <TextView
             android:id="@+id/msgShow"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:padding="5dp"
             android:background="@android:color/darker_gray"
             android:textColor="@android:color/white"
             android:hint="接收数据..."
             android:textSize="14sp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="1px"/>
 </LinearLayout>

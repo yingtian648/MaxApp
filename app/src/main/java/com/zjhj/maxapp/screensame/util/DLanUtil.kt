@@ -1,5 +1,6 @@
 package com.zjhj.maxapp.screensame.util
 
+import android.app.Activity
 import com.zjhj.maxapp.utils.L
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -8,6 +9,7 @@ import org.cybergarage.upnp.Device
 import org.cybergarage.upnp.Service
 import org.cybergarage.upnp.device.DeviceChangeListener
 import org.cybergarage.upnp.event.EventListener
+import org.greenrobot.eventbus.EventBus
 import java.net.URL
 
 /**
@@ -15,10 +17,11 @@ import java.net.URL
  * Author LiuShiHua
  * Description：投屏工具类
  */
-class DLanUtil {
+class DLanUtil(val conext: Activity) {
     var controlPoint = ControlPoint()
     val deviceList = mutableListOf<Device>()
     val DMR = "urn:schemas-upnp-org:device:MediaRenderer:1"//DMR设备服务类型
+    val eventBus = EventBus.getDefault()
 
     init {
         controlPoint.addDeviceChangeListener(object : DeviceChangeListener {
@@ -33,6 +36,7 @@ class DLanUtil {
                 //支持投屏播放的设备的设备类型主要为DMR
                 if (dev != null && DMR.equals(dev.getDeviceType())) {//判断是否为DMR
                     deviceList.add(dev)
+                    eventBus.post(EventDevicesBean("发现新设备", dev, Constants.EVENT_TYPE_DLAN_DEVICES_ADD))
                 }
             }
         })
