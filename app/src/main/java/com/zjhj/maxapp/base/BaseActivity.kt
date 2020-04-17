@@ -1,6 +1,7 @@
 package com.zjhj.maxapp.base
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 
 /**
@@ -10,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
  */
 abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         super.onCreate(savedInstanceState)
         setContentView()
         initView()
@@ -18,10 +21,9 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     abstract fun setContentView()
-
+    abstract fun initView()
+    abstract fun initData()
     abstract fun getData()
 
-    abstract fun initData()
 
-    abstract fun initView()
 }

@@ -1,41 +1,44 @@
 package com.zjhj.maxapp
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Environment
+import android.media.projection.MediaProjectionManager
 import android.os.Handler
 import android.os.Looper
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.zjhj.maxapp.adapter.ApkCopyAdapter
 import com.zjhj.maxapp.adplayer.AdPlayer
-import com.zjhj.maxapp.appUtil.AppInfo
-import com.zjhj.maxapp.appUtil.PackageUtil
+import com.zjhj.maxapp.appcopy.AppInfo
+import com.zjhj.maxapp.appcopy.PackageUtil
 import com.zjhj.maxapp.base.BaseActivity
 import com.zjhj.maxapp.base.BaseRecyclerViewAdapter.OnClickRecyclerItemListener
 import com.zjhj.maxapp.bean.DevInfo
 import com.zjhj.maxapp.http.base.BaseRequest
 import com.zjhj.maxapp.http.base.IBaseCallView
 import com.zjhj.maxapp.myview.MyLinearLayoutManager
-import com.zjhj.maxapp.utils.FileUtil
+import com.zjhj.maxapp.screensame.util.Constants
+import com.zjhj.maxapp.screensame.RecordScreenService
 import com.zjhj.maxapp.utils.L
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener {
     val req = BaseRequest(this)
     lateinit var pkutil: PackageUtil //延迟初始化，可以避免检查空
-    lateinit var adContainer:ViewGroup
+    lateinit var adContainer: ViewGroup
     lateinit var adPlayer: AdPlayer
 
     val TAG: String = "---------->"
     val handler: Handler = Handler(Looper.getMainLooper())
     var dataList = mutableListOf<AppInfo>()
-    var myAdapter = MyAdapter(this, dataList, R.layout.item_rv)
+    val REQUEST_SYS_SCREENRECORD = 1233
+    var myAdapter = ApkCopyAdapter(this, dataList, R.layout.item_rv)
 
     override fun setContentView() {
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_main)
     }
 
@@ -54,7 +57,7 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
 
     override fun initData() {
         pkutil = PackageUtil(this)
-        adPlayer = AdPlayer(this,adContainer)
+        adPlayer = AdPlayer(this, adContainer)
         adPlayer.startPlay()
         dataList.addAll(pkutil.getAppList())
         recyclerView.layoutManager = MyLinearLayoutManager(this, RecyclerView.VERTICAL, false)
@@ -81,11 +84,9 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     }
 
     override fun onClickRecyclerItem(position: Int) {
-        val BACKUP_PATH = "/sdcard/backup1"
         L.d("点击列表项：$position:" + dataList[position].appName)
-        val apkFilePath = pkutil.getApkPath(dataList[position].packageName)
-        var savePath = "/sdcard/111.apk"
-        FileUtil.copyFileN(this,apkFilePath, savePath)
+//        pkutil.showCopyApkDialog(this, dataList[position])
+        startRecordScreen()
     }
 
     override fun loadStart(msg: String, reqType: Int) {
@@ -102,5 +103,32 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
 
     override fun loadErr(message: String, reqType: Int) {
         L.d("请求失败，" + message)
+    }
+
+    //  调用方式
+    lateinit var  mMediaProjectionManager: MediaProjectionManager;
+
+    fun startRecordScreen() {
+        L.d("触发录屏服务");
+        mMediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager;
+        startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(),
+                REQUEST_SYS_SCREENRECORD);
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_SYS_SCREENRECORD -> {
+                if (resultCode == RESULT_OK && data != null) {
+                    L.d("启动录屏服务");
+                    val service = Intent(MainActivity@this, RecordScreenService::class.java)
+                    service.putExtra("code", resultCode);
+                    service.putExtra("data", data);
+                    service.putExtra(Constants.TYPE_FLAG_NAME, Constants.TYPE_SHOTSCREEN) //[返回]类型-截屏);
+                    startService(service)
+                }
+            }
+        }
     }
 }
