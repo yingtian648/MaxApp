@@ -19,13 +19,11 @@
 
 package org.cybergarage.xml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import android.util.Log;
 import org.cybergarage.http.HTTP;
 import org.cybergarage.http.HTTPRequest;
 import org.cybergarage.http.HTTPResponse;
@@ -65,9 +63,15 @@ public abstract class Parser
 			urlCon.setRequestProperty(HTTP.CONTENT_LENGTH,"0");
 			if (host != null)
 				urlCon.setRequestProperty(HTTP.HOST, host);
-
+			urlCon.connect();
+			String acceptData = "";
+			Log.d("-------->","请求返回CODE:"+urlCon.getResponseCode());
+//			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlCon.getInputStream(), "utf-8"));
+//			String line;
+//			while ((line = bufferedReader.readLine()) != null) { //不为空进行操作
+//				acceptData += line;
+//			}
 			InputStream urlIn = urlCon.getInputStream();
-
 			Node rootElem = parse(urlIn);
 			
 			urlIn.close();
@@ -77,6 +81,8 @@ public abstract class Parser
 			
 		} catch (Exception e) {
 			//throw new ParserException(e);
+            e.printStackTrace();
+            Log.d("-------->","parse Exception:"+e.getMessage());
 		}
 
 		HTTPRequest httpReq = new HTTPRequest();

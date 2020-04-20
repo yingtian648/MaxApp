@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers></preference-headers>
+<!--<root xmlns:dlna="urn:schemas-dlna-org:device-1-0" xmlns="urn:schemas-upnp-org:device-1-0">-->
+    <!--<specVersion>-->
+        <!--<major>1</major>-->
+        <!--<minor>0</minor>-->
+    <!--</specVersion>-->
+    <!--<device>-->
+        <!--<dlna:X_DLNACAP xmlns:dlna="urn:schemas-dlna-org:device-1-0"></dlna:X_DLNACAP>-->
+        <!--<dlna:X_DLNADOC xmlns:dlna="urn:schemas-dlna-org:device-1-0">DMR-1.00</dlna:X_DLNADOC>-->
+        <!--<dlna:X_DLNADOC xmlns:dlna="urn:schemas-dlna-org:device-1-0">M-DMR-1.00</dlna:X_DLNADOC>-->
+        <!--<deviceType>urn:schemas-upnp-org:device:MediaRenderer:1</deviceType>-->
+        <!--<presentationURL>/renderpres.html</presentationURL>-->
+        <!--<friendlyName>会议室</friendlyName>-->
+        <!--<manufacturer>XGIMI</manufacturer>-->
+        <!--<manufacturerURL>http://www.xgimi.com</manufacturerURL>-->
+        <!--<modelDescription>XGIMIPlayer</modelDescription>-->
+        <!--<modelName>XGIMIPlayer</modelName>-->
+        <!--<modelURL>http://www.xgimi.com</modelURL>-->
+        <!--<UDN>uuid:e59fe16a-18c4-9664-6ac6-3088413330b9</UDN>-->
+        <!--<iconList>-->
+            <!--<icon>-->
+                <!--<mimetype>image/png</mimetype>-->
+                <!--<width>64</width>-->
+                <!--<height>64</height>-->
+                <!--<depth>24</depth>-->
+                <!--<url>/upnp/dmr-icon-64x64.png</url>-->
+            <!--</icon>-->
+            <!--<icon>-->
+                <!--<mimetype>image/png</mimetype>-->
+                <!--<width>128</width>-->
+                <!--<height>128</height>-->
+                <!--<depth>24</depth>-->
+                <!--<url>/upnp/dmr-icon-128x128.png</url>-->
+            <!--</icon>-->
+        <!--</iconList>-->
+        <!--<serviceList>-->
+            <!--<service>-->
+                <!--<serviceType>urn:schemas-upnp-org:service:AVTransport:1</serviceType>-->
+                <!--<serviceId>urn:upnp-org:serviceId:AVTransport</serviceId>-->
+                <!--<SCPDURL>/upnp/rendertransportSCPD.xml</SCPDURL>-->
+                <!--<controlURL>/upnp/control/rendertransport1</controlURL>-->
+                <!--<eventSubURL>/upnp/event/rendertransport1</eventSubURL>-->
+            <!--</service>-->
+            <!--<service>-->
+                <!--<serviceType>urn:schemas-upnp-org:service:ConnectionManager:1</serviceType>-->
+                <!--<serviceId>urn:upnp-org:serviceId:ConnectionManager</serviceId>-->
+                <!--<SCPDURL>/upnp/renderconnmgrSCPD.xml</SCPDURL>-->
+                <!--<controlURL>/upnp/control/renderconnmgr1</controlURL>-->
+                <!--<eventSubURL>/upnp/event/renderconnmgr1</eventSubURL>-->
+            <!--</service>-->
+            <!--<service>-->
+                <!--<serviceType>urn:schemas-upnp-org:service:RenderingControl:1</serviceType>-->
+                <!--<serviceId>urn:upnp-org:serviceId:RenderingControl</serviceId>-->
+                <!--<SCPDURL>/upnp/rendercontrolSCPD.xml</SCPDURL>-->
+                <!--<controlURL>/upnp/control/rendercontrol1</controlURL>-->
+                <!--<eventSubURL>/upnp/event/rendercontrol1</eventSubURL>-->
+            <!--</service>-->
+        <!--</serviceList>-->
+    <!--</device>-->
+    <!--<URLBase>http://192.168.50.164:49153/</URLBase>-->
+<!--</root>-->

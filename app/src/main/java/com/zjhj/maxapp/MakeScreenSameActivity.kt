@@ -62,8 +62,9 @@ class MakeScreenSameActivity : BaseActivity() {
         ipT.setText(Tools.getLocalHostIpIPV4())
         sendMsgBtn.setOnClickListener {
             for (dev in deviceList) {
-                if (dev.friendlyName.contains("Windows Media Player")) {
-                    dLanUtil.getDeviceServerDec(dev)
+//                if (dev.friendlyName.contains("Windows Media Player")) {
+                if (dev.friendlyName.contains("客厅")) {
+                    L.d("请求服务设备名："+dev.friendlyName)
                     dLanUtil.reqDlanPlay(dev)
                 }
             }
@@ -127,6 +128,8 @@ class MakeScreenSameActivity : BaseActivity() {
     fun busReceiveDevices(event: EventDevicesBean) {
         if (event.device != null)
             deviceList.add(event.device)
+
+        L.d("")
     }
 
     override fun onDestroy() {

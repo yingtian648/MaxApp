@@ -76,6 +76,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Iterator;
 
+import android.util.Log;
 import org.cybergarage.http.HTTP;
 import org.cybergarage.http.HTTPResponse;
 import org.cybergarage.upnp.control.ActionListener;
@@ -458,7 +459,8 @@ public class Service
 
 		try {
 			URL scpdUrl = new URL(rootDev.getAbsoluteURL(scpdURLStr));
-			scpdNode = getSCPDNode(scpdUrl);		
+			Log.d("---------->","scpdUrl: " + scpdUrl);
+			scpdNode = getSCPDNode(scpdUrl);
 			if (scpdNode != null) {
 				data.setSCPDNode(scpdNode);
 				return scpdNode;
@@ -519,9 +521,11 @@ public class Service
 	{
 		ActionList actionList = getActionList();
 		int nActions = actionList.size();
+		Log.d("------->Action","获取Action.size = "+nActions);
 		for (int n=0; n<nActions; n++) {
 			Action action = actionList.getAction(n);
 			String name = action.getName();
+			Log.d("------->Action",name);
 			if (name == null)
 				continue;
 			if (name.equals(actionName) == true)
