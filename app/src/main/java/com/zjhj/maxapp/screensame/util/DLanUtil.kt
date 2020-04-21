@@ -10,6 +10,7 @@ import org.cybergarage.upnp.Service
 import org.cybergarage.upnp.device.DeviceChangeListener
 import org.cybergarage.upnp.event.EventListener
 import org.greenrobot.eventbus.EventBus
+import java.net.URI
 import java.net.URL
 
 /**
@@ -57,40 +58,6 @@ class DLanUtil(val conext: Activity) {
         GlobalScope.launch {
             controlPoint.start()
             controlPoint.search() //搜索提供DLan服务的设备
-        }
-    }
-
-    //请求设备服务-投屏
-    fun reqDlanPlay(device: Device) {
-        // 实例ID
-        val instanceID = "123"
-        // 播放视频地址
-        var currentURI =
-            "http://hc.yinyuetai.com/uploads/videos/common/026E01578953FD0EF0E47204247B5D13.flv?sc=2d17ae37a9186da6&br=780&vid=2693509&aid=623&area=US&vst=2"
-        try {// 获取服务
-            val service = device.getService("urn:schemas-upnp-org:service:AVTransport:1")
-            // 获取动作
-            val transportAction = service.getAction("SetAVTransportURI")
-            // 设置参数
-            transportAction.setArgumentValue("InstanceID", instanceID)
-            transportAction.setArgumentValue("CurrentURI", currentURI)
-            // SetAVTransportURI
-            if (transportAction.postControlAction()) {
-                // 成功
-                val playAction = service.getAction("Play")
-                playAction.setArgumentValue("InstanceID", instanceID)
-                // Play
-                if (!playAction.postControlAction()) {
-                    L.e("upnpErr" + playAction.getStatus().getDescription())
-                } else {
-                    L.d("请求成功")
-                }
-            } else {
-                // 失败
-                L.e("upnpErr:" + transportAction.getStatus().getDescription())
-            }
-        } catch (e: Exception) {
-            L.e("请求服务失败,Exception："+e.message, e)
         }
     }
 

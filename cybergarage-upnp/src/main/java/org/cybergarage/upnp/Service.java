@@ -521,7 +521,6 @@ public class Service
 	{
 		ActionList actionList = getActionList();
 		int nActions = actionList.size();
-		Log.d("------->Action","获取Action.size = "+nActions);
 		for (int n=0; n<nActions; n++) {
 			Action action = actionList.getAction(n);
 			String name = action.getName();

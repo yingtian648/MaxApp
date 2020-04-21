@@ -25,6 +25,4 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation files('libs/kxml2-2.3.0.jar')
-    implementation files('libs/xerces-2.6.2.jar')
 }

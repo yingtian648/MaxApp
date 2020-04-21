@@ -12,14 +12,14 @@ import androidx.core.app.ActivityCompat
 import com.zjhj.maxapp.base.BaseActivity
 import com.zjhj.maxapp.screensame.RecordScreenService
 import com.zjhj.maxapp.screensame.udpsocket.UDPSocket
-import com.zjhj.maxapp.screensame.util.Constants
-import com.zjhj.maxapp.screensame.util.DLanUtil
-import com.zjhj.maxapp.screensame.util.EventBean
-import com.zjhj.maxapp.screensame.util.EventDevicesBean
+import com.zjhj.maxapp.screensame.util.*
 import com.zjhj.maxapp.utils.L
+import com.zjhj.maxapp.utils.PathUtil
 import com.zjhj.maxapp.utils.Tools
 import com.zjhj.maxapp.utils.image.ImageUtils
 import kotlinx.android.synthetic.main.activity_make_screen_same.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.cybergarage.upnp.ControlPoint
 import org.cybergarage.upnp.Device
 import org.greenrobot.eventbus.EventBus
@@ -32,7 +32,10 @@ import java.util.*
 class MakeScreenSameActivity : BaseActivity() {
     var img1 = Environment.getExternalStorageDirectory()?.absolutePath + File.separator + "a11.png"
     var img2 = Environment.getExternalStorageDirectory()?.absolutePath + File.separator + "a12.jpg"
+
+    val controller = RemoteController()
     val REQUEST_SYS_SCREENRECORD = 1233
+    var currDev: Device = Device()
     lateinit var dLanUtil: DLanUtil
     val deviceList = mutableListOf<Device>()
 
@@ -60,21 +63,35 @@ class MakeScreenSameActivity : BaseActivity() {
 
     override fun initView() {
         ipT.setText(Tools.getLocalHostIpIPV4())
+
+        var currentURI = PathUtil.getPicTempPath() + File.separator + "a12.jpg"
+//        val currentURI = "https://media.w3.org/2010/05/sintel/trailer.mp4"
+//        var currentURI = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+
         sendMsgBtn.setOnClickListener {
-            for (dev in deviceList) {
-//                if (dev.friendlyName.contains("Windows Media Player")) {
-                if (dev.friendlyName.contains("客厅")) {
-                    L.d("请求服务设备名："+dev.friendlyName)
-                    dLanUtil.reqDlanPlay(dev)
+            GlobalScope.launch {
+                for (dev in deviceList) {
+                    if (dev.friendlyName.contains("Windows Media Player")) {
+                        L.d("请求服务设备名：" + dev.friendlyName)
+                        currDev = dev
+//                        val playResult = controller.play(dev, currentURI)//播放视频
+                        val playResult = controller.setMute(dev, currentURI)
+                        L.d("播放 " + (if (playResult) "成功" else "失败"))
+                    }
                 }
             }
         }
         sendImgMsgBtn.setOnClickListener {
-
+            GlobalScope.launch {
+                controller.pause(currDev)
+            }
         }
         screenshots.setOnClickListener {
-            startPlayViews()
-            startRecordScreen()
+//            startPlayViews()
+//            startRecordScreen()
+            GlobalScope.launch {
+                controller.continuePlay(currDev)
+            }
         }
     }
 
