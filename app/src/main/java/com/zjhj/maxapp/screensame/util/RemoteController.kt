@@ -54,6 +54,9 @@ class RemoteController {
         return playAction.postControlAction()
     }
 
+    /**
+     * 获取信息
+     */
     fun getTransportState(device: Device): String? {
         val localService = device.getService(AVTransport1) ?: return null
         val localAction = localService.getAction("GetTransportInfo") ?: return null
@@ -63,6 +66,26 @@ class RemoteController {
         } else {
             null
         }
+    }
+
+    /**
+     * 设置音量
+     */
+    fun getMinVolumeValue(device: Device): Int {
+        val minValue = getVolumeDbRange(device, "MinValue")
+        return if (TextUtils.isEmpty(minValue)) {
+            0
+        } else minValue!!.toInt()
+    }
+
+    /**
+     * 设置音量
+     */
+    fun getMaxVolumeValue(device: Device): Int {
+        val maxValue = getVolumeDbRange(device, "MaxValue")
+        return if (TextUtils.isEmpty(maxValue)) {
+            100
+        } else maxValue!!.toInt()
     }
 
     fun getVolumeDbRange(device: Device, argument: String?): String? {
@@ -77,20 +100,9 @@ class RemoteController {
         }
     }
 
-    fun getMinVolumeValue(device: Device): Int {
-        val minValue = getVolumeDbRange(device, "MinValue")
-        return if (TextUtils.isEmpty(minValue)) {
-            0
-        } else minValue!!.toInt()
-    }
-
-    fun getMaxVolumeValue(device: Device): Int {
-        val maxValue = getVolumeDbRange(device, "MaxValue")
-        return if (TextUtils.isEmpty(maxValue)) {
-            100
-        } else maxValue!!.toInt()
-    }
-
+    /**
+     * 滑动
+     */
     fun seek(device: Device, targetPosition: String?): Boolean {
         val localService = device.getService(AVTransport1) ?: return false
         val localAction = localService.getAction("Seek") ?: return false
@@ -108,6 +120,9 @@ class RemoteController {
         }
     }
 
+    /**
+     * 获取当前播放位置信息
+     */
     fun getPositionInfo(device: Device): String? {
         val localService = device.getService(AVTransport1) ?: return null
         val localAction = localService.getAction("GetPositionInfo") ?: return null
@@ -135,6 +150,9 @@ class RemoteController {
     }
 
 
+    /**
+     * 设置静音
+     */
     fun setMute(mediaRenderDevice: Device, targetValue: String?): Boolean {
         val service = mediaRenderDevice.getService(RenderingControl) ?: return false
         val action = service.getAction("SetMute") ?: return false
@@ -144,6 +162,9 @@ class RemoteController {
         return action.postControlAction()
     }
 
+    /**
+     * 设置静音
+     */
     fun getMute(device: Device): String? {
         val service = device.getService(RenderingControl) ?: return null
         val getAction = service.getAction("GetMute") ?: return null
@@ -153,6 +174,9 @@ class RemoteController {
         return getAction.getArgumentValue("CurrentMute")
     }
 
+    /**
+     * 设置音量
+     */
     fun setVoice(device: Device, value: Int): Boolean {
         val service = device.getService(RenderingControl) ?: return false
         val action = service.getAction("SetVolume") ?: return false
@@ -198,3 +222,31 @@ class RemoteController {
     }
 
 }
+
+/**
+ *
+ * 设备服务类型如下 3 种
+<serviceType>urn:schemas-upnp-org:service:AVTransport:1</serviceType>
+<serviceId>urn:upnp-org:serviceId:AVTransport</serviceId>
+<controlURL>/upnphost/udhisapi.dll?control=uuid:d2f0fb4f-113d-45c6-a5f6-d4b99d4c0f5a+urn:upnp-
+org:serviceId:AVTransport</controlURL>
+<eventSubURL>/upnphost/udhisapi.dll?event=uuid:d2f0fb4f-113d-45c6-a5f6-d4b99d4c0f5a+urn:upnp-
+org:serviceId:AVTransport</eventSubURL>
+<SCPDURL>/upnphost/udhisapi.dll?content=uuid:8100d553-1cc4-4a4d-a3dc-2b48544dacbd</SCPDURL>
+
+<serviceType>urn:schemas-upnp-org:service:RenderingControl:1</serviceType>
+<serviceId>urn:upnp-org:serviceId:RenderingControl</serviceId>
+<controlURL>/upnphost/udhisapi.dll?control=uuid:d2f0fb4f-113d-45c6-a5f6-d4b99d4c0f5a+urn:upnp-
+org:serviceId:RenderingControl</controlURL>
+<eventSubURL>/upnphost/udhisapi.dll?event=uuid:d2f0fb4f-113d-45c6-a5f6-d4b99d4c0f5a+urn:upnp-
+org:serviceId:RenderingControl</eventSURL>
+<SCPDURL>/upnphost/udhisapi.dll?content=uuid:e35537a8-0ddf-4e9a-a92c-449897135ea2</SCPDURL>
+
+<serviceType>urn:schemas-upnp-org:service:ConnectionManager:1</serviceType>
+<serviceId>urn:upnp-org:serviceId:ConnectionManager</serviceId>
+<controlURL>/upnphost/udhisapi.dll?control=uuid:d2f0fb4f-113d-45c6-a5f6-d4b99d4c0f5a+urn:upnp-org:serviceId:ConnectionManager</controlURL>
+<eventSubURL>/upnphost/udhisapi.dll?event=uuid:d2f0fb4f-113d-45c6-a5f6-d4b99d4c0f5a+urn:upnp-org:serviceId:ConnectionManager</eventSubURL>
+<SCPDURL>/upnphost/udhisapi.dll?content=uuid:e5eb1d48-ecd3-41dd-8ebf-55cfe265d54a</SCPDURL>
+
+ */
+

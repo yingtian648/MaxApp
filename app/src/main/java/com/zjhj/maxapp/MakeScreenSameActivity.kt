@@ -5,22 +5,21 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.projection.MediaProjectionManager
-import android.os.Bundle
 import android.os.Environment
 import android.text.TextUtils
 import androidx.core.app.ActivityCompat
+import com.koushikdutta.async.http.AsyncHttpClient
+import com.koushikdutta.async.http.AsyncHttpClient.FileCallback
+import com.koushikdutta.async.http.AsyncHttpResponse
 import com.zjhj.maxapp.base.BaseActivity
 import com.zjhj.maxapp.screensame.RecordScreenService
-import com.zjhj.maxapp.screensame.udpsocket.UDPSocket
 import com.zjhj.maxapp.screensame.util.*
 import com.zjhj.maxapp.utils.L
-import com.zjhj.maxapp.utils.PathUtil
 import com.zjhj.maxapp.utils.Tools
 import com.zjhj.maxapp.utils.image.ImageUtils
 import kotlinx.android.synthetic.main.activity_make_screen_same.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.cybergarage.upnp.ControlPoint
 import org.cybergarage.upnp.Device
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -64,19 +63,27 @@ class MakeScreenSameActivity : BaseActivity() {
     override fun initView() {
         ipT.setText(Tools.getLocalHostIpIPV4())
 
-        var currentURI = PathUtil.getPicTempPath() + File.separator + "a12.jpg"
-//        val currentURI = "https://media.w3.org/2010/05/sintel/trailer.mp4"
+//        var currentURI = PathUtil.getPicTempPath() + File.separator + "a12.jpg"
+        val currentURI = "https://media.w3.org/2010/05/sintel/trailer.mp4"
 //        var currentURI = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
 
         sendMsgBtn.setOnClickListener {
             GlobalScope.launch {
+
+
                 for (dev in deviceList) {
                     if (dev.friendlyName.contains("Windows Media Player")) {
                         L.d("请求服务设备名：" + dev.friendlyName)
                         currDev = dev
-//                        val playResult = controller.play(dev, currentURI)//播放视频
-                        val playResult = controller.setMute(dev, currentURI)
+                        for (serv in dev.serviceList) {
+                            if (serv != null) {
+                                L.d(serv.toString())
+                            }
+                        }
+                        val playResult = controller.play(dev, currentURI)//播放视频
+//                        val playResult = controller.setMute(dev, currentURI)
                         L.d("播放 " + (if (playResult) "成功" else "失败"))
+                        L.d("传输状态：" + (controller.getTransportState(dev)))
                     }
                 }
             }
@@ -87,7 +94,7 @@ class MakeScreenSameActivity : BaseActivity() {
             }
         }
         screenshots.setOnClickListener {
-//            startPlayViews()
+            //            startPlayViews()
 //            startRecordScreen()
             GlobalScope.launch {
                 controller.continuePlay(currDev)
