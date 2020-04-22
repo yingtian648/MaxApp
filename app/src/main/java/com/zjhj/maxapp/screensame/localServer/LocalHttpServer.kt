@@ -29,6 +29,8 @@ class LocalHttpServer private constructor() : HttpServerRequestCallback {
     val REPOMSE_ERR_CODE = -1 //请求失败码
     val EVENT_SERVER_STARTED = 4001 //eventbus传递类型【本地服务已开启】
 
+    var bitmapData: ByteArray? = null
+
     private val eventBus = EventBus.getDefault()
     var server = AsyncHttpServer()
 
@@ -81,7 +83,9 @@ class LocalHttpServer private constructor() : HttpServerRequestCallback {
         //获取header参数
         val headers = request.headers.multiMap
         Log.d(TAG, "headers:" + Gson().toJson(headers))
-        if (uri != null &&
+        if (uri.toLowerCase().startsWith("/data")) {//请求数据流
+            response!!.send("bytes", bitmapData)
+        } else if (uri != null &&
             (uri.toLowerCase().endsWith(".jpg") ||
                     uri.toLowerCase().endsWith(".png") ||
                     uri.toLowerCase().endsWith(".mp4"))

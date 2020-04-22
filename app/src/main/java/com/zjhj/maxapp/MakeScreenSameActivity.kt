@@ -96,10 +96,10 @@ class MakeScreenSameActivity : BaseActivity() {
             }
         }
         startServer.setOnClickListener {
-            LocalHttpServer.getInstance()?.startServer("11112.jpg",1)
+//            LocalHttpServer.getInstance()?.startServer("11112.jpg",1)
         }
         stopServer.setOnClickListener {
-            LocalHttpServer.getInstance()?.stopServer()
+//            LocalHttpServer.getInstance()?.stopServer()
         }
     }
 
