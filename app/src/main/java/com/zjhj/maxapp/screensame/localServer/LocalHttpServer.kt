@@ -68,7 +68,7 @@ class LocalHttpServer private constructor() : HttpServerRequestCallback {
      * 收到回调此方法
      */
     override fun onRequest(request: AsyncHttpServerRequest?, response: AsyncHttpServerResponse?) {
-        //此方法包括了封装返回的接口请求数据和处理异常以及跨域
+        //返回的接口请求数据和处理异常以及跨域
         response?.headers?.add("Access-Control-Allow-Headers", "allowHeaders")
         response?.headers?.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, HEAD")
         response?.headers?.add("Access-Control-Allow-Credentials", "true")
