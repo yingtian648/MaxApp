@@ -45,6 +45,25 @@
                 android:layout_weight="1"
                 android:text="截屏"/>
     </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <Button
+                android:id="@+id/startServer"
+                android:layout_width="0dp"
+                android:layout_marginLeft="2dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="开启本地服务"/>
+        <Button
+                android:id="@+id/stopServer"
+                android:layout_width="0dp"
+                android:layout_marginLeft="2dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="停止本地服务"/>
+    </LinearLayout>
     <ImageView
             android:id="@+id/image"
             android:layout_width="match_parent"

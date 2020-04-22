@@ -13,6 +13,7 @@ import com.koushikdutta.async.http.AsyncHttpClient.FileCallback
 import com.koushikdutta.async.http.AsyncHttpResponse
 import com.zjhj.maxapp.base.BaseActivity
 import com.zjhj.maxapp.screensame.RecordScreenService
+import com.zjhj.maxapp.screensame.localServer.LocalHttpServer
 import com.zjhj.maxapp.screensame.util.*
 import com.zjhj.maxapp.utils.L
 import com.zjhj.maxapp.utils.Tools
@@ -24,14 +25,10 @@ import org.cybergarage.upnp.Device
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.io.File
 import java.util.*
 
 
 class MakeScreenSameActivity : BaseActivity() {
-    var img1 = Environment.getExternalStorageDirectory()?.absolutePath + File.separator + "a11.png"
-    var img2 = Environment.getExternalStorageDirectory()?.absolutePath + File.separator + "a12.jpg"
-
     val controller = RemoteController()
     val REQUEST_SYS_SCREENRECORD = 1233
     var currDev: Device = Device()
@@ -63,14 +60,12 @@ class MakeScreenSameActivity : BaseActivity() {
     override fun initView() {
         ipT.setText(Tools.getLocalHostIpIPV4())
 
-//        var currentURI = PathUtil.getPicTempPath() + File.separator + "a12.jpg"
-        val currentURI = "https://media.w3.org/2010/05/sintel/trailer.mp4"
+//        val currentURI = "https://media.w3.org/2010/05/sintel/trailer.mp4"
 //        var currentURI = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+        var currentURI = "http://192.168.50.227:5051/1112.mp4"
 
         sendMsgBtn.setOnClickListener {
             GlobalScope.launch {
-
-
                 for (dev in deviceList) {
                     if (dev.friendlyName.contains("Windows Media Player")) {
                         L.d("请求服务设备名：" + dev.friendlyName)
@@ -99,6 +94,12 @@ class MakeScreenSameActivity : BaseActivity() {
             GlobalScope.launch {
                 controller.continuePlay(currDev)
             }
+        }
+        startServer.setOnClickListener {
+            LocalHttpServer.getInstance()?.startServer("11112.jpg",1)
+        }
+        stopServer.setOnClickListener {
+            LocalHttpServer.getInstance()?.stopServer()
         }
     }
 
@@ -144,6 +145,10 @@ class MakeScreenSameActivity : BaseActivity() {
             }
             Constants.EVENT_TYPE_SEND_MSG -> {//发送数据
                 msgShow.setText(if (TextUtils.isEmpty(msgShow.text)) ("我：" + event.msg) else (msgShow.text.toString() + "\n我：" + event.msg))
+            }
+            Constants.EVENT_SERVER_STARTED ->{//本地服务开启
+                L.d(event.msg)
+                L.d(event.content)
             }
         }
     }
