@@ -1,19 +1,20 @@
 package com.zjhj.maxapp
 
 import android.Manifest
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.media.projection.MediaProjectionManager
-import android.os.Environment
+import android.os.IBinder
 import android.text.TextUtils
 import androidx.core.app.ActivityCompat
-import com.koushikdutta.async.http.AsyncHttpClient
-import com.koushikdutta.async.http.AsyncHttpClient.FileCallback
-import com.koushikdutta.async.http.AsyncHttpResponse
 import com.zjhj.maxapp.base.BaseActivity
 import com.zjhj.maxapp.screensame.RecordScreenService
-import com.zjhj.maxapp.screensame.localServer.LocalHttpServer
+import com.zjhj.maxapp.screensame.dlan.DLanUtil
+import com.zjhj.maxapp.screensame.dlan.DlanController
+import com.zjhj.maxapp.screensame.httpserver.HttpServerService
 import com.zjhj.maxapp.screensame.util.*
 import com.zjhj.maxapp.utils.L
 import com.zjhj.maxapp.utils.Tools
@@ -26,10 +27,12 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.*
+import android.net.wifi.WifiManager;
+import com.zjhj.maxapp.app_protect.JobSchedulerService
 
 
 class MakeScreenSameActivity : BaseActivity() {
-    val controller = RemoteController()
+    val controller = DlanController()
     val REQUEST_SYS_SCREENRECORD = 1233
     var currDev: Device = Device()
     lateinit var dLanUtil: DLanUtil
@@ -38,7 +41,17 @@ class MakeScreenSameActivity : BaseActivity() {
     override fun setContentView() {
         setContentView(R.layout.activity_make_screen_same)
         EventBus.getDefault().register(this)
+    }
 
+    override fun getData() {
+//        val intent = Intent("android.settings.WIFI_DISPLAY_SETTINGS");
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK and Intent.FLAG_ACTIVITY_CLEAR_TOP)
+//        startActivity(intent)
+    }
+
+    override fun initData() {
+        dLanUtil = DLanUtil(this)
+        dLanUtil.startSearchDevices()
         val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE //这个是需要申请的权限信息
         val checkPermission = let { ActivityCompat.checkSelfPermission(this, permission) }
         if (checkPermission == PackageManager.PERMISSION_GRANTED) {//已授权
@@ -48,21 +61,12 @@ class MakeScreenSameActivity : BaseActivity() {
         }
     }
 
-    override fun getData() {
-
-    }
-
-    override fun initData() {
-        dLanUtil = DLanUtil(this)
-        dLanUtil.startSearchDevices()
-    }
-
     override fun initView() {
         ipT.setText(Tools.getLocalHostIpIPV4())
 
 //        val currentURI = "https://media.w3.org/2010/05/sintel/trailer.mp4"
 //        var currentURI = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-        var currentURI = "http://192.168.50.227:5051/1112.mp4"
+        var currentURI = "http://192.168.50.227:5051/data/111"
 
         sendMsgBtn.setOnClickListener {
             GlobalScope.launch {
@@ -90,16 +94,25 @@ class MakeScreenSameActivity : BaseActivity() {
         }
         screenshots.setOnClickListener {
             //            startPlayViews()
-//            startRecordScreen()
-            GlobalScope.launch {
-                controller.continuePlay(currDev)
-            }
+            startRecordScreen()
+//            GlobalScope.launch {
+//                controller.continuePlay(currDev)
+//            }
         }
         startServer.setOnClickListener {
-//            LocalHttpServer.getInstance()?.startServer("11112.jpg",1)
+            //            LocalHttpServer.getInstance()?.startServer("11112.jpg",1)
+            bindService(Intent(MainActivity@ this, HttpServerService::class.java), object : ServiceConnection {
+                override fun onServiceDisconnected(p0: ComponentName?) {
+                    L.d("绑定服务成功")
+                }
+
+                override fun onServiceConnected(p0: ComponentName?, p1: IBinder?) {
+                    L.d("解除绑定服务")
+                }
+            }, BIND_AUTO_CREATE)
         }
         stopServer.setOnClickListener {
-//            LocalHttpServer.getInstance()?.stopServer()
+            //            LocalHttpServer.getInstance()?.stopServer()
         }
     }
 
@@ -144,9 +157,9 @@ class MakeScreenSameActivity : BaseActivity() {
                 msgShow.setText(if (TextUtils.isEmpty(msgShow.text)) (event.msg + "：" + event.content) else (msgShow.text.toString() + "\n" + event.msg + "：图片"))
             }
             Constants.EVENT_TYPE_SEND_MSG -> {//发送数据
-                msgShow.setText(if (TextUtils.isEmpty(msgShow.text)) ("我：" + event.msg) else (msgShow.text.toString() + "\n我：" + event.msg))
+//                msgShow.setText(if (TextUtils.isEmpty(msgShow.text)) ("我：" + event.msg) else (msgShow.text.toString() + "\n我：" + event.msg))
             }
-            Constants.EVENT_SERVER_STARTED ->{//本地服务开启
+            Constants.EVENT_SERVER_STARTED -> {//本地服务开启
                 L.d(event.msg)
                 L.d(event.content)
             }

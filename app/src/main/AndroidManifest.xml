@@ -15,6 +15,13 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.hardware.usb.host"/>
+    <uses-permission android:name="android.hardware.usb.accessory"/>
+    <!-- 部分手机上是没有otg的所以需要加入特性-->
+    <uses-feature android:name="android.hardware.usb.host" android:required="true"/>
+
 
     <application
             android:name=".App"
@@ -24,20 +31,49 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+        <service
+                android:name=".app_protect.JobSchedulerService"
+                android:permission="android.permission.BIND_JOB_SERVICE"
+                android:enabled="true"
+                android:exported="true"
+                android:process=":push"/>
+        <service android:name=".app_protect.GrayService"/>
+        <activity android:name=".TestActivity">
+        </activity>
         <activity android:name=".MakeScreenSameActivity">
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.MAIN"/>-->
+
+            <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+            <!--</intent-filter>-->
+        </activity>
+        <activity android:name=".ApkCopyActivity">
+        </activity>
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ApkCopyActivity">
-        </activity>
-        <activity android:name=".MainActivity">
-
-        </activity>
-
+        <receiver android:name=".usb.USBReceiver">
+            <intent-filter android:priority="200">
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"/>
+            </intent-filter>
+            <intent-filter android:priority="200">
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_MOUNTED"/>
+                <data android:scheme="file"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_EJECT"/>
+                <data android:scheme="file"/>
+            </intent-filter>
+        </receiver>
         <service android:name=".screensame.RecordScreenService"/>
+        <service android:name=".screensame.httpserver.HttpServerService"/>
 
         <provider
                 android:name=".utils.MyFileProvider"

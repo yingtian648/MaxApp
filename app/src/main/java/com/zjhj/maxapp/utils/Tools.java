@@ -1,10 +1,15 @@
 package com.zjhj.maxapp.utils;
 
 
+import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.content.ClipboardManager;
 
+import android.content.ComponentName;
 import android.content.Context;
 
+import android.os.Build;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
@@ -14,6 +19,9 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 
 import java.util.Enumeration;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -86,5 +94,46 @@ public class Tools {
             ex.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 判断某个界面是否在前台
+     *
+     * @param context   Context
+     * @param className 界面的类名
+     * @return 是否在前台显示
+     */
+    @TargetApi(Build.VERSION_CODES.Q)
+    public static boolean isForeground(Context context, String className) {
+        if (context == null || TextUtils.isEmpty(className))
+            return false;
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> list = am.getRunningTasks(1);
+        if (list != null && list.size() > 0) {
+            ComponentName cpn = list.get(0).topActivity;
+            if (className.equals(cpn.getClassName()))
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean isAppAlive(Context context, String package_name) {
+        ActivityManager am = (ActivityManager) context
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> list = am.getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo appProcess : list) {
+            String processName = appProcess.processName;
+            if (processName != null && processName.equals(package_name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 验证String是否匹配正则
+    public static boolean checkStrinRegexp(String regexp,String str) {
+        Pattern pattern = Pattern.compile(regexp);
+        Matcher matcher = pattern.matcher(str);
+        return matcher.matches();
     }
 }

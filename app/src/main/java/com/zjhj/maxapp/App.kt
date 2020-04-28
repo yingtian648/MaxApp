@@ -8,13 +8,17 @@ import android.content.Context
  * Author LiuShiHua
  * Description：
  */
-class App : Application(){
-    lateinit var context: Context
+class App : Application() {
+
+
+    companion object {
+        lateinit var context: Context
+        get
+    }
 
     override fun onCreate() {
         super.onCreate()
         context = this
-
     }
 
 }

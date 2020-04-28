@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.zjhj.maxapp.adapter.ApkCopyAdapter
 import com.zjhj.maxapp.adplayer.AdPlayer
+import com.zjhj.maxapp.app_protect.JobSchedulerService
 import com.zjhj.maxapp.appcopy.AppInfo
 import com.zjhj.maxapp.appcopy.PackageUtil
 import com.zjhj.maxapp.base.BaseActivity
@@ -56,6 +57,7 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     }
 
     override fun initData() {
+        startService(Intent(this, JobSchedulerService::class.java))
         pkutil = PackageUtil(this)
         adPlayer = AdPlayer(this, adContainer)
         adPlayer.startPlay()
@@ -106,13 +108,15 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     }
 
     //  调用方式
-    lateinit var  mMediaProjectionManager: MediaProjectionManager;
+    lateinit var mMediaProjectionManager: MediaProjectionManager;
 
     fun startRecordScreen() {
         L.d("触发录屏服务");
         mMediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager;
-        startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(),
-                REQUEST_SYS_SCREENRECORD);
+        startActivityForResult(
+            mMediaProjectionManager.createScreenCaptureIntent(),
+            REQUEST_SYS_SCREENRECORD
+        );
     }
 
 
@@ -122,7 +126,7 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
             REQUEST_SYS_SCREENRECORD -> {
                 if (resultCode == RESULT_OK && data != null) {
                     L.d("启动录屏服务");
-                    val service = Intent(MainActivity@this, RecordScreenService::class.java)
+                    val service = Intent(MainActivity@ this, RecordScreenService::class.java)
                     service.putExtra("code", resultCode);
                     service.putExtra("data", data);
                     service.putExtra(Constants.TYPE_FLAG_NAME, Constants.TYPE_SHOTSCREEN) //[返回]类型-截屏);

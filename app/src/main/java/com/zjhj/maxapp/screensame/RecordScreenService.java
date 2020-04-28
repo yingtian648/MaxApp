@@ -21,7 +21,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.Surface;
 import androidx.annotation.Nullable;
-import com.zjhj.maxapp.screensame.udpsocket.UDPSocket;
+import com.zjhj.maxapp.screensame.udputil.UDPSocket;
 import com.zjhj.maxapp.screensame.util.Constants;
 import com.zjhj.maxapp.screensame.util.EventBean;
 import com.zjhj.maxapp.utils.FileUtil;
@@ -233,7 +233,7 @@ public class RecordScreenService extends IntentService {
         baos.reset();
         bitmap = zipBitmapByQuality(bitmap, 30 * 1024);
         bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
-        socket.sendUDPMsg(baos.toByteArray(), Constants.MSG_TYPE_IMAGE);
+        bus.post(new EventBean("图片", baos.toByteArray(), Constants.EVENT_TYPE_SEND_MSG));
         handler.sendEmptyMessageDelayed(HANDLER_GETCAPTURE, 100);
     }
 

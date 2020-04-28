@@ -1,6 +1,8 @@
-package com.zjhj.maxapp.screensame.util
+package com.zjhj.maxapp.screensame.dlan
 
 import android.app.Activity
+import com.zjhj.maxapp.screensame.util.Constants
+import com.zjhj.maxapp.screensame.util.EventDevicesBean
 import com.zjhj.maxapp.utils.L
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -10,7 +12,6 @@ import org.cybergarage.upnp.Service
 import org.cybergarage.upnp.device.DeviceChangeListener
 import org.cybergarage.upnp.event.EventListener
 import org.greenrobot.eventbus.EventBus
-import java.net.URI
 import java.net.URL
 
 /**
@@ -37,7 +38,13 @@ class DLanUtil(val conext: Activity) {
                 //支持投屏播放的设备的设备类型主要为DMR
                 if (dev != null && DMR.equals(dev.getDeviceType())) {//判断是否为DMR
                     deviceList.add(dev)
-                    eventBus.post(EventDevicesBean("发现新设备", dev, Constants.EVENT_TYPE_DLAN_DEVICES_ADD))
+                    eventBus.post(
+                        EventDevicesBean(
+                            "发现新设备",
+                            dev,
+                            Constants.EVENT_TYPE_DLAN_DEVICES_ADD
+                        )
+                    )
                 } else {
 //                    L.d("未添加设备：" + dev?.deviceType)
                 }

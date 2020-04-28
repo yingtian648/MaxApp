@@ -1,4 +1,4 @@
-package com.zjhj.maxapp.screensame.udpsocket
+package com.zjhj.maxapp.screensame.udputil
 
 import com.zjhj.maxapp.screensame.util.Constants
 import com.zjhj.maxapp.screensame.util.EventBean

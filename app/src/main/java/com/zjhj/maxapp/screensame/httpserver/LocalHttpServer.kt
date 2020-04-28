@@ -1,4 +1,4 @@
-package com.zjhj.maxapp.screensame.localServer
+package com.zjhj.maxapp.screensame.httpserver
 
 import android.util.Log
 import com.google.gson.Gson
@@ -84,7 +84,10 @@ class LocalHttpServer private constructor() : HttpServerRequestCallback {
         val headers = request.headers.multiMap
         Log.d(TAG, "headers:" + Gson().toJson(headers))
         if (uri.toLowerCase().startsWith("/data")) {//请求数据流
-            response!!.send("bytes", bitmapData)
+            if (bitmapData == null || (bitmapData as ByteArray).size == 0)
+                response!!.send("bytes", "没数据".toByteArray(Charsets.UTF_8))
+            else
+                response!!.send("bytes", bitmapData)
         } else if (uri != null &&
             (uri.toLowerCase().endsWith(".jpg") ||
                     uri.toLowerCase().endsWith(".png") ||

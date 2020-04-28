@@ -1,4 +1,4 @@
-package com.zjhj.maxapp.screensame.util
+package com.zjhj.maxapp.screensame.dlan
 
 import android.text.TextUtils
 import org.cybergarage.upnp.Device
@@ -8,7 +8,7 @@ import org.cybergarage.upnp.Device
  * Author LiuShiHua
  * Description：
  */
-class RemoteController {
+class DlanController {
     private val AVTransport1 = "urn:schemas-upnp-org:service:AVTransport:1"
     private val SetAVTransportURI = "SetAVTransportURI"
     private val RenderingControl = "urn:schemas-upnp-org:service:RenderingControl:1"
