@@ -21,12 +21,15 @@ class ApkCopyAdapter(context: Context, dataList: List<AppInfo>, layoutId: Int) :
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val holder1 = holder as ItemHolder
-        holder1.appName.text = dataList[position].appName ?: "应用名称：--"
-        holder1.pkName.text = dataList[position].packageName ?: "应用包名：--"
-        holder1.versionName.text = "版本名：" + dataList[position].versionName ?: "应用版本名：--"
-        holder1.versionCode.text = "版本号：" + dataList[position].versionCode.toString() ?: "应用版本号：--"
-        holder1.image.setImageDrawable(dataList[position].iconDrawable)
+        val holder = holder as ItemHolder
+        val appInfo = dataList[position]
+        with(appInfo) {//with 方便在模块中使用同一个类的不同属性，不同方法
+            holder.appName.text = appName ?: "应用名称：--"
+            holder.pkName.text = packageName ?: "应用包名：--"
+            holder.versionName.text = "版本名：" + versionName ?: "应用版本名：--"
+            holder.versionCode.text = "版本号：" + versionCode.toString() ?: "应用版本号：--"
+            holder.image.setImageDrawable(iconDrawable)
+        }
     }
 
     inner class ItemHolder(view: View) : RecyclerView.ViewHolder(view) {
