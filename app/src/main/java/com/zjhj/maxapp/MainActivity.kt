@@ -7,8 +7,9 @@ import android.content.pm.PackageManager
 import android.media.projection.MediaProjectionManager
 import android.os.Handler
 import android.os.Looper
+import android.view.Menu
+import android.view.MenuItem
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.zjhj.maxapp.adapter.ApkCopyAdapter
@@ -22,10 +23,12 @@ import com.zjhj.maxapp.bean.DevInfo
 import com.zjhj.maxapp.http.base.BaseRequest
 import com.zjhj.maxapp.http.base.IBaseCallView
 import com.zjhj.maxapp.myview.MyLinearLayoutManager
-import com.zjhj.maxapp.screensame.util.Constants
 import com.zjhj.maxapp.screensame.RecordScreenService
+import com.zjhj.maxapp.screensame.util.Constants
 import com.zjhj.maxapp.utils.L
 import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.reflect.Method
+
 
 class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener {
     val req = BaseRequest(this)
@@ -41,6 +44,37 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
 
     override fun setContentView() {
         setContentView(R.layout.activity_main)
+        setSupportActionBar(toolBar)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.home_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id: Int = item.getItemId()
+        when (id) {
+            R.id.menu_appcopy -> startActivity(Intent(this,ApkCopyActivity::class.java))
+            R.id.menu_theme_conf -> startActivity(Intent(this,ThemeActivity::class.java))
+            else -> {
+            }
+        }
+        return true
+    }
+
+    private fun setIconsVisible(menu: Menu?, flag: Boolean) { //判断menu是否为空
+        if (menu != null) {
+            try { //如果不为空,就反射拿到menu的setOptionalIconsVisible方法
+                val method: Method = menu.javaClass.getDeclaredMethod("setOptionalIconsVisible", java.lang.Boolean.TYPE)
+                //暴力访问该方法
+                method.setAccessible(true)
+                //调用该方法显示icon
+                method.invoke(menu, flag)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     var position = 0
@@ -134,5 +168,9 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
                 }
             }
         }
+    }
+
+    override fun notifyByThemeChanged() {
+        recreate()
     }
 }

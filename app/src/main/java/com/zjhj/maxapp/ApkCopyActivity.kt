@@ -35,6 +35,10 @@ class ApkCopyActivity  : BaseActivity(), BaseRecyclerViewAdapter.OnClickRecycler
 
     }
 
+    override fun notifyByThemeChanged() {
+        recreate()
+    }
+
     override fun initData() {
         pkutil = PackageUtil(this)
         dataList.addAll(pkutil.getAppList())

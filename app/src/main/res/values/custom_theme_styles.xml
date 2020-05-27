@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MarioTheme" parent="Theme.AppCompat.Light.DarkActionBar" >
+        <!-- 隐藏Activity窗口的ActionBar -->
+        <item name="windowActionBar">false</item>
+        <!-- 隐藏Activity窗口的Title标题栏 -->
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="MarioTheme.Day" >
+        <!-- 日间模式下 "custom_attr_app_bg" 的赋值为#FFFFFF -->
+        <item name="custom_attr_app_bg">#FFFFFF</item>
+    </style>
+
+    <style name="MarioTheme.Night" >
+        <!-- 夜间模式下 "custom_attr_app_bg" 的赋值为#1F1F1F -->
+        <item name="custom_attr_app_bg">#1F1F1F</item>
+    </style>
+
+    <style name="MarioTheme.Day.Preview" />
+
+    <style name="MarioTheme.Night.Preview" />
+</resources>

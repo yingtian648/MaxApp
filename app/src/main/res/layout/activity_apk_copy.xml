@@ -2,19 +2,20 @@
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent" android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context=".MainActivity">
+
     <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolBar"
-            app:title="复制APK"
-            app:navigationIcon="@drawable/nav_back_"
             android:layout_width="match_parent"
-            app:titleTextColor="@android:color/white"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-    />
+            android:background="?attr/titlebar_bg"
+            app:titleTextColor="?attr/titlebar_text_color"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="ApkCopy"
+            app:navigationIcon="@drawable/arrow_back_white_30dp"
+            android:layout_height="56dp"/>
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"

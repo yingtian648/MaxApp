@@ -207,4 +207,8 @@ class MakeScreenSameActivity : BaseActivity() {
             }
         }
     }
+
+    override fun notifyByThemeChanged() {
+
+    }
 }

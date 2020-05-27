@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MaxApp</string>
+    <string name="nickname">测试1</string>
+    <string name="remark">测试2</string>
 </resources>

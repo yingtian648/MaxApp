@@ -8,4 +8,30 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ToolbarPopupTheme" parent="@style/ThemeOverlay.AppCompat.Dark">
+        <item name="overlapAnchor">false</item>  <!--设置不覆盖锚点-->
+        <item name="android:dropDownVerticalOffset">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:popupBackground">@color/colorPrimary</item> <!--更改背景颜色-->
+    </style>
+
+    <style name="theme_day" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="titlebar_bg">#1EABF0</item>
+        <item name="titlebar_text_color">#FFFFFF</item>
+        <item name="body_bg">#F3F3F3</item>
+        <item name="body_text_color">#333333</item>
+    </style>
+    <style name="theme_night" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="titlebar_bg">#000000</item>
+        <item name="titlebar_text_color">#FFFFFF</item>
+        <item name="body_bg">#888888</item>
+        <item name="body_text_color">#EAEAEA</item>
+    </style>
+
+    <style name="theme_day.chi_sim">
+        <item name="title">主题配置</item>
+    </style>
+    <style name="theme_night.eng">
+        <item name="title">TopicConfig</item>
+    </style>
 </resources>
