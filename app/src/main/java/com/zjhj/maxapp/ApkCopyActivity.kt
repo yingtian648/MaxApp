@@ -35,7 +35,7 @@ class ApkCopyActivity  : BaseActivity(), BaseRecyclerViewAdapter.OnClickRecycler
 
     }
 
-    override fun notifyByThemeChanged() {
+    override fun notifyThemeChanged() {
         recreate()
     }
 

@@ -15,12 +15,15 @@
         <item name="android:popupBackground">@color/colorPrimary</item> <!--更改背景颜色-->
     </style>
 
+    <!-- 主题：白天 -->
     <style name="theme_day" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="titlebar_bg">#1EABF0</item>
         <item name="titlebar_text_color">#FFFFFF</item>
         <item name="body_bg">#F3F3F3</item>
         <item name="body_text_color">#333333</item>
     </style>
+
+    <!-- 主题：夜晚 -->
     <style name="theme_night" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="titlebar_bg">#000000</item>
         <item name="titlebar_text_color">#FFFFFF</item>
@@ -28,6 +31,7 @@
         <item name="body_text_color">#EAEAEA</item>
     </style>
 
+    <!-- theme_day.chi_sim 表示继承theme_day -->
     <style name="theme_day.chi_sim">
         <item name="title">主题配置</item>
     </style>

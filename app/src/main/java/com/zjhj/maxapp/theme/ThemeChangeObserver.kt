@@ -9,5 +9,5 @@ interface ThemeChangeObserver {
     /**
      * 主题改变后通知
      */
-    fun notifyByThemeChanged()
+    fun notifyThemeChanged()
 }

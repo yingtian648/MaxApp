@@ -1,6 +1,8 @@
 package com.zjhj.maxapp.http.base
 
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.zjhj.maxapp.http.HttpMsgUtil
@@ -21,6 +23,9 @@ import java.nio.charset.Charset
  * Description：
  */
 class BaseRequest(val callView: IBaseCallView) {
+
+    val handler = Handler(Looper.getMainLooper())
+
     companion object {
         val gson = Gson()
         const val SUCCESS_CODE = 200//请求成功码
@@ -76,19 +81,22 @@ class BaseRequest(val callView: IBaseCallView) {
     inner class myBack(val reqType: Int, val isLoadMore: Boolean = false) : Callback {
         override fun onFailure(call: Call, e: IOException) {
             L.e(e.message + "")
-            this@BaseRequest.callView.loadErr(HttpMsgUtil.getHttpMsg(e.message), reqType)
+            this@BaseRequest.handler.post({
+                this@BaseRequest.callView.loadErr(HttpMsgUtil.getHttpMsg(e.message), reqType)
+            })
         }
 
         override fun onResponse(call: Call, response: Response) {
-            if (response.code == SUCCESS_CODE) {
-                var content = response.body?.string()
-                L.d(response.code.toString() + ":::" + content)
-                this@BaseRequest.callView.loadSuccessData(content, isLoadMore, reqType)
-            } else {
-                this@BaseRequest.callView.loadErr(HttpMsgUtil.getHttpMsg(response.message), reqType)
-            }
+            this@BaseRequest.handler.post({
+                if (response.code == SUCCESS_CODE) {
+                    var content = response.body?.string()
+                    L.d(response.code.toString() + ":::" + content)
+                    this@BaseRequest.callView.loadSuccessData(content, isLoadMore, reqType)
+                } else {
+                    this@BaseRequest.callView.loadErr(HttpMsgUtil.getHttpMsg(response.message), reqType)
+                }
+            })
         }
-
     }
 
     /**
@@ -121,7 +129,7 @@ class BaseRequest(val callView: IBaseCallView) {
      * POST  Map
      * 参数postBody是Map
      */
-    fun postBody(url: String, postBody: Map<String, Any>, reqType: Int) {
+    fun postMap(url: String, postBody: Map<String, Any>, reqType: Int) {
 
     }
 

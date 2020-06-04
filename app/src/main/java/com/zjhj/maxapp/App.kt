@@ -13,7 +13,7 @@ import com.zjhj.maxapp.theme.ThemeChangeObserver
 class App : Application() {
 
 
-    companion object {
+    companion object {//静态属性或方法
         lateinit var context: Context
         get
 
@@ -50,7 +50,7 @@ class App : Application() {
             val observers: List<ThemeChangeObserver>? = obtainThemeChangeObserverStack()
             for (observer in observers!!) {
                 observer.loadingCurrentTheme() //
-                observer.notifyByThemeChanged() //
+                observer.notifyThemeChanged() //
             }
         }
     }

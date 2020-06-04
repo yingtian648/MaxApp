@@ -29,6 +29,7 @@ import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 import android.net.wifi.WifiManager;
 import com.zjhj.maxapp.app_protect.JobSchedulerService
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MakeScreenSameActivity : BaseActivity() {
@@ -208,7 +209,7 @@ class MakeScreenSameActivity : BaseActivity() {
         }
     }
 
-    override fun notifyByThemeChanged() {
+    override fun notifyThemeChanged() {
 
     }
 }

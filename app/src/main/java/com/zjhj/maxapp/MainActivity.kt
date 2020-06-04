@@ -4,13 +4,17 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.TypedArray
 import android.media.projection.MediaProjectionManager
 import android.os.Handler
 import android.os.Looper
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.zjhj.maxapp.adapter.ApkCopyAdapter
 import com.zjhj.maxapp.adplayer.AdPlayer
@@ -26,6 +30,7 @@ import com.zjhj.maxapp.myview.MyLinearLayoutManager
 import com.zjhj.maxapp.screensame.RecordScreenService
 import com.zjhj.maxapp.screensame.util.Constants
 import com.zjhj.maxapp.utils.L
+import com.zjhj.maxapp.vm.DevInfoVM
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.reflect.Method
 
@@ -41,10 +46,39 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     var dataList = mutableListOf<AppInfo>()
     val REQUEST_SYS_SCREENRECORD = 1233
     var myAdapter = ApkCopyAdapter(this, dataList, R.layout.item_rv)
+    private lateinit var model: DevInfoVM
+
 
     override fun setContentView() {
+        model = ViewModelProviders.of(this).get(DevInfoVM::class.java)
+        model.getDev().observe(this, Observer<DevInfo> { devInfo ->
+            // update UI1
+            L.d("更新视图:" + devInfo.values?.mainCompany)
+            toolBar.title = devInfo.values?.mainCompany
+        })
+
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolBar)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        L.d("onStart")
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        L.d("onRestart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        L.d("onResume")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        L.d("onStop")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -55,8 +89,8 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id: Int = item.getItemId()
         when (id) {
-            R.id.menu_appcopy -> startActivity(Intent(this,ApkCopyActivity::class.java))
-            R.id.menu_theme_conf -> startActivity(Intent(this,ThemeActivity::class.java))
+            R.id.menu_appcopy -> startActivity(Intent(this, ApkCopyActivity::class.java))
+            R.id.menu_theme_conf -> startActivity(Intent(this, ThemeActivity::class.java))
             else -> {
             }
         }
@@ -170,7 +204,11 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
         }
     }
 
-    override fun notifyByThemeChanged() {
-        recreate()
+    override fun notifyThemeChanged() {
+        val typedValue = TypedValue()
+        //获取当前主题下的titlebar_bg属性值，并赋给typedValue
+        theme.resolveAttribute(R.attr.titlebar_bg, typedValue, true)
+        //设置属性值【注意：属性是那种类型，设置的时候就用成那种类型】
+        toolBar.setBackgroundColor(typedValue.data)
     }
 }

@@ -2,7 +2,6 @@ package com.zjhj.maxapp
 
 import com.zjhj.maxapp.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_theme.*
-import okhttp3.internal.notify
 
 class ThemeActivity : BaseActivity() {
     override fun setContentView() {
@@ -28,7 +27,7 @@ class ThemeActivity : BaseActivity() {
 
     }
 
-    override fun notifyByThemeChanged() {
+    override fun notifyThemeChanged() {
 
     }
 }
