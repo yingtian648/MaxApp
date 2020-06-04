@@ -53,8 +53,8 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
         model = ViewModelProviders.of(this).get(DevInfoVM::class.java)
         model.getDev().observe(this, Observer<DevInfo> { devInfo ->
             // update UI1
-            L.d("更新视图:" + devInfo.values?.mainCompany)
-            toolBar.title = devInfo.values?.mainCompany
+            L.d("更新视图:" + devInfo?.values?.mainCompany)
+            toolBar.title = devInfo?.values?.mainCompany
         })
 
         setContentView(R.layout.activity_main)
