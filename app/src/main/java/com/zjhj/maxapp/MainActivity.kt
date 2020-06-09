@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.TypedArray
 import android.media.projection.MediaProjectionManager
 import android.os.Handler
 import android.os.Looper
@@ -16,6 +15,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
 import com.zjhj.maxapp.adapter.ApkCopyAdapter
 import com.zjhj.maxapp.adplayer.AdPlayer
 import com.zjhj.maxapp.app_protect.JobSchedulerService
@@ -27,6 +27,8 @@ import com.zjhj.maxapp.bean.DevInfo
 import com.zjhj.maxapp.http.base.BaseRequest
 import com.zjhj.maxapp.http.base.IBaseCallView
 import com.zjhj.maxapp.myview.MyLinearLayoutManager
+import com.zjhj.maxapp.room.MyDatabase
+import com.zjhj.maxapp.room.RoomManager
 import com.zjhj.maxapp.screensame.RecordScreenService
 import com.zjhj.maxapp.screensame.util.Constants
 import com.zjhj.maxapp.utils.L
@@ -59,26 +61,6 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolBar)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        L.d("onStart")
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-        L.d("onRestart")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        L.d("onResume")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        L.d("onStop")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -125,6 +107,7 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     }
 
     override fun initData() {
+
         startService(Intent(this, JobSchedulerService::class.java))
         pkutil = PackageUtil(this)
         adPlayer = AdPlayer(this, adContainer)
