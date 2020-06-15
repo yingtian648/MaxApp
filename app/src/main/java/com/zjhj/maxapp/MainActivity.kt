@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.TypedArray
 import android.media.projection.MediaProjectionManager
 import android.os.Handler
 import android.os.Looper
@@ -16,6 +15,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
 import com.zjhj.maxapp.adapter.ApkCopyAdapter
 import com.zjhj.maxapp.adplayer.AdPlayer
 import com.zjhj.maxapp.app_protect.JobSchedulerService
@@ -27,6 +27,8 @@ import com.zjhj.maxapp.bean.DevInfo
 import com.zjhj.maxapp.http.base.BaseRequest
 import com.zjhj.maxapp.http.base.IBaseCallView
 import com.zjhj.maxapp.myview.MyLinearLayoutManager
+import com.zjhj.maxapp.room.MyDatabase
+import com.zjhj.maxapp.room.RoomManager
 import com.zjhj.maxapp.screensame.RecordScreenService
 import com.zjhj.maxapp.screensame.util.Constants
 import com.zjhj.maxapp.utils.L
