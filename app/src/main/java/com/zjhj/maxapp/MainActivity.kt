@@ -46,24 +46,27 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     var dataList = mutableListOf<AppInfo>()
     val REQUEST_SYS_SCREENRECORD = 1233
     var myAdapter = ApkCopyAdapter(this, dataList, R.layout.item_rv)
-    private lateinit var model: DevInfoVM
 
+    lateinit var model: DevInfoVM
 
     override fun setContentView() {
+        //获取ViewModel
         model = ViewModelProviders.of(this).get(DevInfoVM::class.java)
+        //绑定生命周期
         model.getDev().observe(this, Observer<DevInfo> { devInfo ->
             // update UI1
             L.d("更新视图:" + devInfo?.values?.mainCompany)
             toolBar.title = devInfo?.values?.mainCompany
         })
-
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolBar)
+        model.getData("setContentView");
     }
 
     override fun onStart() {
         super.onStart()
         L.d("onStart")
+        model.getData("onStart")
     }
 
     override fun onRestart() {
@@ -74,11 +77,13 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     override fun onResume() {
         super.onResume()
         L.d("onResume")
+        model.getData("onResume")
     }
 
     override fun onStop() {
         super.onStop()
         L.d("onStop")
+        model.getData("onStop")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -125,6 +130,7 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
     }
 
     override fun initData() {
+        model.getData("initData");
         startService(Intent(this, JobSchedulerService::class.java))
         pkutil = PackageUtil(this)
         adPlayer = AdPlayer(this, adContainer)
@@ -155,8 +161,9 @@ class MainActivity : BaseActivity(), IBaseCallView, OnClickRecyclerItemListener 
 
     override fun onClickRecyclerItem(position: Int) {
         L.d("点击列表项：$position:" + dataList[position].appName)
+        model.getMoreData()
 //        pkutil.showCopyApkDialog(this, dataList[position])
-        startRecordScreen()
+//        startRecordScreen()
     }
 
     override fun loadStart(msg: String, reqType: Int) {

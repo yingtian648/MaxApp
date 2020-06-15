@@ -19,6 +19,7 @@ class ThemeActivity : BaseActivity() {
             titlebar.title = devInfo?.values?.mainCompany
         })
         setContentView(R.layout.activity_theme)
+        model.getData("setContentView");
     }
 
     override fun onDestroy() {
@@ -38,7 +39,7 @@ class ThemeActivity : BaseActivity() {
     }
 
     override fun initData() {
-
+        model.getData("initData");
     }
 
     override fun getData() {
